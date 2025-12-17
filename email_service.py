@@ -2,32 +2,32 @@
 Service d'envoi d'emails pour ValoMaison
 - Alertes leads en temps reel
 - Rapports quotidiens de trafic
+- Utilise Brevo (ex-Sendinblue) API
 """
 
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import requests
 from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
 
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
 
-def get_smtp_config():
-    """Recupere la configuration SMTP depuis les variables d'environnement."""
+
+def get_email_config():
+    """Recupere la configuration email depuis les variables d'environnement."""
     return {
-        'server': os.getenv('SMTP_SERVER', 'smtp.gmail.com'),
-        'port': int(os.getenv('SMTP_PORT', 587)),
-        'user': os.getenv('SMTP_USER'),
-        'password': os.getenv('SMTP_PASSWORD'),
+        'api_key': os.getenv('BREVO_API_KEY'),
+        'sender_email': os.getenv('SENDER_EMAIL', 'contact@valomaison.fr'),
+        'sender_name': os.getenv('SENDER_NAME', 'ValoMaison'),
         'notify_email': os.getenv('NOTIFY_EMAIL', 'contact@valomaison.fr')
     }
 
 
 def send_email(subject, html_content, to_email=None):
     """
-    Envoie un email via SMTP.
+    Envoie un email via Brevo API.
 
     Args:
         subject: Sujet de l'email
@@ -37,52 +37,47 @@ def send_email(subject, html_content, to_email=None):
     Returns:
         bool: True si envoi reussi, False sinon
     """
-    config = get_smtp_config()
+    config = get_email_config()
 
-    if not config['user'] or not config['password']:
-        logger.warning("Configuration SMTP incomplete - email non envoye")
+    if not config['api_key']:
+        logger.warning("Cle API Brevo manquante - email non envoye")
+        print("ERREUR: BREVO_API_KEY non configuree")
         return False
 
     to_email = to_email or config['notify_email']
 
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": config['api_key']
+    }
+
+    payload = {
+        "sender": {
+            "name": config['sender_name'],
+            "email": config['sender_email']
+        },
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": html_content
+    }
+
     try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = config['user']
-        msg['To'] = to_email
+        print(f"Envoi email via Brevo a {to_email}...")
+        response = requests.post(BREVO_API_URL, json=payload, headers=headers, timeout=30)
 
-        html_part = MIMEText(html_content, 'html', 'utf-8')
-        msg.attach(html_part)
-
-        print(f"Connexion SMTP {config['server']}:{config['port']}...")
-
-        # Port 465 = SSL direct, Port 587 = STARTTLS
-        if config['port'] == 465:
-            with smtplib.SMTP_SSL(config['server'], config['port'], timeout=30) as server:
-                print(f"Login {config['user']}...")
-                server.login(config['user'], config['password'])
-                print("Envoi...")
-                server.sendmail(config['user'], to_email, msg.as_string())
+        if response.status_code == 201:
+            logger.info(f"Email envoye: {subject}")
+            print("Email envoye!")
+            return True
         else:
-            with smtplib.SMTP(config['server'], config['port'], timeout=30) as server:
-                print("STARTTLS...")
-                server.starttls()
-                print(f"Login {config['user']}...")
-                server.login(config['user'], config['password'])
-                print("Envoi...")
-                server.sendmail(config['user'], to_email, msg.as_string())
+            logger.error(f"Erreur Brevo: {response.status_code} - {response.text}")
+            print(f"ERREUR: {response.status_code} - {response.text}")
+            return False
 
-        logger.info(f"Email envoye: {subject}")
-        print("Email envoye!")
-        return True
-
-    except smtplib.SMTPAuthenticationError as e:
-        logger.error(f"Erreur authentification SMTP: {e}")
-        print(f"ERREUR AUTH: {e}")
-        return False
-    except smtplib.SMTPConnectError as e:
-        logger.error(f"Erreur connexion SMTP: {e}")
-        print(f"ERREUR CONNEXION: {e}")
+    except requests.exceptions.Timeout:
+        logger.error("Timeout lors de l'envoi")
+        print("ERREUR: Timeout")
         return False
     except Exception as e:
         logger.error(f"Erreur envoi email: {e}")
