@@ -472,7 +472,7 @@
                                     <span class="cta-icon">📞</span>
                                     <div class="cta-content">
                                         <strong>Être rappelé</strong>
-                                        <span>Sous 24h par un expert</span>
+                                        <span>Par un expert immobilier</span>
                                     </div>
                                 </button>
                                 <button type="button" class="cta-card" onclick="showVisitForm()">
@@ -493,7 +493,7 @@
                     <div id="callback-form-container" class="lead-form-container hidden">
                         <button type="button" class="back-btn" onclick="hideLeadForms()">Retour</button>
                         <h4>Demande de rappel</h4>
-                        <p>Un conseiller vous contactera dans les 24h pour répondre à vos questions.</p>
+                        <p>Un conseiller vous contactera pour répondre à vos questions.</p>
                         <form id="callback-form" class="lead-form">
                             <div class="form-row">
                                 <div class="form-group">
@@ -968,7 +968,7 @@
                 document.getElementById('callback-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');
                 document.getElementById('success-message').textContent =
-                    'Un conseiller vous rappellera dans les 24h sur le ' + data.telephone;
+                    'Un conseiller vous rappellera sur le ' + data.telephone;
 
             } catch (err) {
                 // Fallback: store locally
