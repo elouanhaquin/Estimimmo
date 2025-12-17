@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>À propos | EstimImmo - Estimation immobilière gratuite</title>
+    <meta name="description" content="Découvrez EstimImmo, l'outil d'estimation immobilière gratuit basé sur les données DVF officielles. Notre méthodologie et notre engagement.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}a-propos">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link active">A propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <header class="page-header page-header-large">
+            <h1>A propos d'EstimImmo</h1>
+            <p>Un outil d'estimation immobiliere transparent, gratuit et base sur les donnees reelles</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-page">
+            <div class="content-container">
+
+                <!-- Mission -->
+                <section class="content-section">
+                    <h2>Notre mission</h2>
+                    <p>EstimImmo a été créé avec une conviction simple : <strong>tout le monde devrait pouvoir estimer gratuitement la valeur de son bien immobilier</strong>, sans avoir à donner ses coordonnées ou à subir des appels commerciaux.</p>
+                    <p>Nous croyons en la transparence du marché immobilier. En utilisant les données publiques des transactions réelles, nous permettons à chacun d'avoir une vision objective de la valeur de son bien.</p>
+                </section>
+
+                <!-- Methodology -->
+                <section class="content-section">
+                    <h2>Notre methodologie</h2>
+                    <div class="method-cards">
+                        <div class="method-card">
+                            <h3>Donnees DVF</h3>
+                            <p>Nous utilisons les donnees des <strong>Demandes de Valeurs Foncieres (DVF)</strong>, publiees par la Direction Generale des Finances Publiques. Ces donnees contiennent toutes les transactions immobilieres reelles en France depuis 2014.</p>
+                        </div>
+                        <div class="method-card">
+                            <h3>Analyse locale</h3>
+                            <p>Pour chaque estimation, nous analysons les transactions dans votre code postal. Si les donnees sont insuffisantes, nous elargissons automatiquement la recherche aux communes voisines pour garantir une estimation fiable.</p>
+                        </div>
+                        <div class="method-card">
+                            <h3>Ajustements precis</h3>
+                            <p>Notre algorithme applique des coefficients d'ajustement bases sur les caracteristiques de votre bien : etat, DPE, etage, equipements, exposition... Ces coefficients sont calibres sur les pratiques du marche.</p>
+                        </div>
+                        <div class="method-card">
+                            <h3>Fourchette de prix</h3>
+                            <p>Nous fournissons une fourchette (basse, moyenne, haute) plutot qu'un prix unique. Cela reflete la realite du marche ou le prix final depend de nombreux facteurs subjectifs.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Source -->
+                <section class="content-section">
+                    <h2>Les données DVF</h2>
+                    <p>Les données DVF (Demandes de Valeurs Foncières) sont publiées en open data par l'État français. Elles contiennent :</p>
+                    <ul class="feature-list">
+                        <li>Le prix de vente réel de chaque transaction</li>
+                        <li>La date de la mutation</li>
+                        <li>La localisation (commune, code postal, section cadastrale)</li>
+                        <li>Le type de bien (appartement, maison, terrain...)</li>
+                        <li>La surface du bien</li>
+                        <li>Le nombre de pièces</li>
+                    </ul>
+                    <p>Ces données sont mises à jour régulièrement et couvrent l'ensemble du territoire français métropolitain.</p>
+                    <p><a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener" class="external-link">Consulter les données DVF sur data.gouv.fr</a></p>
+                </section>
+
+                <!-- Limitations -->
+                <section class="content-section">
+                    <h2>Limites de l'estimation</h2>
+                    <p>Notre estimation est un <strong>outil d'aide à la décision</strong>, pas une évaluation officielle. Voici ce qu'elle ne peut pas prendre en compte :</p>
+                    <ul class="feature-list">
+                        <li>L'état précis du bien (travaux récents, défauts cachés...)</li>
+                        <li>La qualité des finitions et des matériaux</li>
+                        <li>Les nuisances locales (bruit, vis-à-vis précis...)</li>
+                        <li>Le potentiel de négociation selon le marché local</li>
+                        <li>Les spécificités juridiques (servitudes, copropriété...)</li>
+                    </ul>
+                    <p>Pour une estimation officielle ou un projet de vente, nous vous recommandons de consulter un professionnel de l'immobilier.</p>
+                </section>
+
+                <!-- Values -->
+                <section class="content-section">
+                    <h2>Nos engagements</h2>
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <h3>Confidentialite</h3>
+                            <p>Aucune donnee personnelle collectee. Pas d'inscription, pas de cookies de tracking.</p>
+                        </div>
+                        <div class="value-card">
+                            <h3>Gratuite</h3>
+                            <p>Service 100% gratuit, sans limite d'estimations, sans frais caches.</p>
+                        </div>
+                        <div class="value-card">
+                            <h3>Transparence</h3>
+                            <p>Nous expliquons notre methodologie et affichons le detail des ajustements.</p>
+                        </div>
+                        <div class="value-card">
+                            <h3>Objectivite</h3>
+                            <p>Donnees officielles, algorithme impartial, aucun interet commercial.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CTA -->
+                <section class="content-cta">
+                    <h2>Prêt à estimer votre bien ?</h2>
+                    <p>Obtenez une estimation gratuite en moins de 2 minutes</p>
+                    <a href="/estimation" class="btn-primary btn-large">Estimer mon bien</a>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

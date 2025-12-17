@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Contact | EstimImmo - Estimation immobilière gratuite</title>
+    <meta name="description" content="Contactez l'équipe EstimImmo pour toute question, suggestion ou partenariat.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}contact">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link">A propos</a>
+                <a href="/contact" class="nav-link active">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1>Contactez-nous</h1>
+            <p>Une question, une suggestion ou un partenariat ? Nous sommes à votre écoute.</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-page">
+            <div class="content-container contact-container">
+
+                <!-- Contact Info -->
+                <div class="contact-info-section">
+                    <div class="contact-card">
+                        <h3>Par email</h3>
+                        <p>Pour toute question ou suggestion :</p>
+                        <a href="mailto:contact@estimoimmo.fr" class="contact-link">contact@estimoimmo.fr</a>
+                    </div>
+
+                    <div class="contact-card">
+                        <h3>Reponse rapide</h3>
+                        <p>Nous nous efforcons de repondre a tous les messages dans un delai de 48 heures ouvrees.</p>
+                    </div>
+
+                    <div class="contact-card">
+                        <h3>Partenariats</h3>
+                        <p>Vous etes professionnel de l'immobilier et souhaitez collaborer ?</p>
+                        <a href="mailto:partenariat@estimoimmo.fr" class="contact-link">partenariat@estimoimmo.fr</a>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-section">
+                    <h2>Envoyez-nous un message</h2>
+                    <form id="contact-form" class="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Nom</label>
+                                <input type="text" id="name" name="name" placeholder="Votre nom" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" placeholder="votre@email.fr" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Sujet</label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Choisissez un sujet</option>
+                                <option value="question">Question sur le service</option>
+                                <option value="bug">Signaler un problème</option>
+                                <option value="suggestion">Suggestion d'amélioration</option>
+                                <option value="partenariat">Partenariat</option>
+                                <option value="autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Votre message..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Envoyer le message</button>
+                    </form>
+
+                    <div id="form-success" class="form-success hidden">
+                        <span class="success-icon">✓</span>
+                        <h3>Message envoyé !</h3>
+                        <p>Nous avons bien reçu votre message et vous répondrons dans les meilleurs délais.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ Link -->
+                <section class="contact-faq">
+                    <h2>Questions frequentes</h2>
+                    <p>Avant de nous contacter, consultez peut-etre notre <a href="/#faq-section">FAQ</a> qui repond aux questions les plus courantes.</p>
+                    <div class="faq-quick-links">
+                        <a href="/#comment-ca-marche" class="quick-link">Comment ca marche ?</a>
+                        <a href="/a-propos" class="quick-link">Notre methodologie</a>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Simple form handling (demo - would need backend in production)
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // In production, this would send to a backend API
+            // For now, show success message and open mailto
+            const form = this;
+            const name = form.name.value;
+            const email = form.email.value;
+            const subject = form.subject.options[form.subject.selectedIndex].text;
+            const message = form.message.value;
+
+            // Create mailto link as fallback
+            const mailtoBody = `Nom: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0A${message}`;
+            const mailtoLink = `mailto:contact@estimoimmo.fr?subject=${encodeURIComponent(subject)}&body=${mailtoBody}`;
+
+            // Show success message
+            form.classList.add('hidden');
+            document.getElementById('form-success').classList.remove('hidden');
+
+            // Open email client
+            window.location.href = mailtoLink;
+        });
+    </script>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

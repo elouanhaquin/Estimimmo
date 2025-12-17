@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Mentions legales | EstimImmo</title>
+    <meta name="description" content="Mentions legales du site EstimImmo. Informations sur l'editeur et l'hebergeur du site.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="{{ request.url_root }}mentions-legales">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link">A propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1>Mentions legales</h1>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-page">
+            <div class="content-container legal-content">
+
+                <section class="content-section">
+                    <h2>1. Editeur du site</h2>
+                    <p>Le site EstimImmo est edite par :</p>
+                    <ul>
+                        <li><strong>Nom :</strong> EstimImmo</li>
+                        <li><strong>Email :</strong> contact@estimoimmo.fr</li>
+                        <li><strong>Directeur de la publication :</strong> Le responsable d'EstimImmo</li>
+                    </ul>
+                </section>
+
+                <section class="content-section">
+                    <h2>2. Hebergement</h2>
+                    <p>Le site est heberge par :</p>
+                    <ul>
+                        <li><strong>Hebergeur :</strong> [Nom de l'hebergeur]</li>
+                        <li><strong>Adresse :</strong> [Adresse de l'hebergeur]</li>
+                        <li><strong>Telephone :</strong> [Telephone de l'hebergeur]</li>
+                    </ul>
+                </section>
+
+                <section class="content-section">
+                    <h2>3. Propriete intellectuelle</h2>
+                    <p>L'ensemble du contenu du site EstimImmo (textes, images, graphismes, logo, icones, sons, logiciels, etc.) est la propriete exclusive d'EstimImmo ou de ses partenaires et est protege par les lois francaises et internationales relatives a la propriete intellectuelle.</p>
+                    <p>Toute reproduction, representation, modification, publication, adaptation de tout ou partie des elements du site, quel que soit le moyen ou le procede utilise, est interdite, sauf autorisation ecrite prealable d'EstimImmo.</p>
+                </section>
+
+                <section class="content-section">
+                    <h2>4. Donnees utilisees</h2>
+                    <p>Les estimations immobilieres sont basees sur les donnees publiques des Demandes de Valeurs Foncieres (DVF), mises a disposition par l'Etat francais sur <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">data.gouv.fr</a>.</p>
+                    <p>Ces donnees sont utilisees conformement a la licence ouverte Etalab.</p>
+                </section>
+
+                <section class="content-section">
+                    <h2>5. Limitation de responsabilite</h2>
+                    <p>Les informations contenues sur ce site sont aussi precises que possible et le site est periodiquement mis a jour, mais peut toutefois contenir des inexactitudes, des omissions ou des lacunes.</p>
+                    <p>EstimImmo ne pourra etre tenu responsable des dommages directs et indirects causes au materiel de l'utilisateur, lors de l'acces au site.</p>
+                    <p>Les estimations fournies sont indicatives et ne sauraient engager la responsabilite d'EstimImmo.</p>
+                </section>
+
+                <section class="content-section">
+                    <h2>6. Cookies</h2>
+                    <p>Le site EstimImmo utilise des cookies techniques necessaires au fonctionnement du site. Pour plus d'informations, consultez notre <a href="/politique-confidentialite">Politique de confidentialite</a>.</p>
+                </section>
+
+                <section class="content-section">
+                    <h2>7. Droit applicable</h2>
+                    <p>Les presentes mentions legales sont regies par le droit francais. En cas de litige, et apres echec de toute tentative de recherche d'une solution amiable, les tribunaux francais seront seuls competents.</p>
+                </section>
+
+                <section class="content-section">
+                    <h2>8. Contact</h2>
+                    <p>Pour toute question ou reclamation, vous pouvez nous contacter via notre <a href="/contact">formulaire de contact</a> ou par email a contact@estimoimmo.fr.</p>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

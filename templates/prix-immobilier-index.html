@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Prix immobilier par ville en France - Estimation gratuite | EstimImmo</title>
+    <meta name="description" content="Consultez les prix immobiliers par ville et departement en France. Donnees DVF officielles. Estimation gratuite de votre bien.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}prix-immobilier">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}prix-immobilier">
+    <meta property="og:title" content="Prix immobilier par ville en France">
+    <meta property="og:description" content="Consultez les prix au m² dans toutes les communes de France.">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link">A propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header class="page-header page-header-large">
+            <h1>Prix immobilier en France</h1>
+            <p>Consultez les prix au m² dans plus de 35 000 communes</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-page">
+            <div class="content-container">
+
+                <section class="content-section">
+                    <h2>Selectionnez un departement</h2>
+                    <p>Cliquez sur un departement pour voir les prix immobiliers des communes.</p>
+                </section>
+
+                <div class="dept-grid">
+                    {% for dept in departements %}
+                    <a href="/prix-immobilier?dept={{ dept.code }}" class="dept-card">
+                        <div class="dept-code">{{ dept.code }}</div>
+                        <div class="dept-name">{{ dept.nom }}</div>
+                        {% if dept.prix_m2_appartement %}
+                        <div class="dept-price">{{ "%.0f"|format(dept.prix_m2_appartement) }} €/m²</div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <!-- Search Section -->
+                <section class="content-section" style="margin-top: 3rem;">
+                    <h2>Rechercher une commune</h2>
+                    <p>Vous pouvez aussi utiliser notre outil d'estimation pour obtenir le prix au m² de n'importe quelle commune :</p>
+                    <div style="margin-top: 1.5rem;">
+                        <a href="/estimation" class="btn-primary btn-large">Estimer mon bien</a>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

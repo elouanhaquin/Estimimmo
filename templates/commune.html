@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Prix immobilier {{ commune.nom }} ({{ commune.code_postal }}) : {{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€/m² | EstimImmo</title>
+    <meta name="description" content="Prix au m² à {{ commune.nom }}: appartement {{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€{% if commune.evolution_appartement %} ({{ "%+.1f"|format(commune.evolution_appartement) }}%){% endif %}, maison {{ "%.0f"|format(commune.prix_m2_maison or 0) }}€. {{ commune.nb_transactions_12m or 0 }} ventes en 2024. Estimation gratuite.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}prix-immobilier/{{ commune.slug }}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}prix-immobilier/{{ commune.slug }}">
+    <meta property="og:title" content="Prix immobilier à {{ commune.nom }} ({{ commune.code_postal }})">
+    <meta property="og:description" content="Prix au m² à {{ commune.nom }}: appartement {{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€/m², maison {{ "%.0f"|format(commune.prix_m2_maison or 0) }}€/m². Estimation gratuite.">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Place",
+        "name": "{{ commune.nom }}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "{{ commune.nom }}",
+            "postalCode": "{{ commune.code_postal }}",
+            "addressRegion": "{{ commune.departement.nom if commune.departement else '' }}",
+            "addressCountry": "FR"
+        },
+        {% if commune.latitude and commune.longitude %}
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": {{ commune.latitude }},
+            "longitude": {{ commune.longitude }}
+        },
+        {% endif %}
+        "additionalProperty": [
+            {
+                "@type": "PropertyValue",
+                "name": "Prix moyen m² appartement",
+                "value": "{{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€"
+            },
+            {
+                "@type": "PropertyValue",
+                "name": "Prix moyen m² maison",
+                "value": "{{ "%.0f"|format(commune.prix_m2_maison or 0) }}€"
+            },
+            {
+                "@type": "PropertyValue",
+                "name": "Nombre de transactions",
+                "value": "{{ commune.nb_transactions_12m or 0 }}"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link">A propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Fil d'Ariane">
+            <a href="/">Accueil</a>
+            <span class="separator">/</span>
+            <a href="/prix-immobilier">Prix immobilier</a>
+            <span class="separator">/</span>
+            {% if commune.departement %}
+            <a href="/prix-immobilier?dept={{ commune.departement_code }}">{{ commune.departement.nom }}</a>
+            <span class="separator">/</span>
+            {% endif %}
+            <span class="current">{{ commune.nom }}</span>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="commune-hero">
+            <h1>Prix immobilier à {{ commune.nom }}</h1>
+            <p class="commune-location">{{ commune.code_postal }} - {{ commune.departement.nom if commune.departement else '' }}{% if commune.region %}, {{ commune.region }}{% endif %}</p>
+
+            {% if commune.prix_m2_appartement or commune.prix_m2_maison %}
+            <div class="stats-hero">
+                {% if commune.prix_m2_appartement %}
+                <div class="stat-card">
+                    <span class="stat-icon">🏢</span>
+                    <div class="stat-content">
+                        <span class="stat-value">{{ "%.0f"|format(commune.prix_m2_appartement) }} €/m²</span>
+                        <span class="stat-label">Appartement</span>
+                        {% if commune.evolution_appartement %}
+                        <span class="stat-trend {% if commune.evolution_appartement > 0 %}trend-up{% elif commune.evolution_appartement < 0 %}trend-down{% else %}trend-stable{% endif %}">
+                            {{ "%+.1f"|format(commune.evolution_appartement) }}% sur 1 an
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if commune.prix_m2_maison %}
+                <div class="stat-card">
+                    <span class="stat-icon">🏡</span>
+                    <div class="stat-content">
+                        <span class="stat-value">{{ "%.0f"|format(commune.prix_m2_maison) }} €/m²</span>
+                        <span class="stat-label">Maison</span>
+                        {% if commune.evolution_maison %}
+                        <span class="stat-trend {% if commune.evolution_maison > 0 %}trend-up{% elif commune.evolution_maison < 0 %}trend-down{% else %}trend-stable{% endif %}">
+                            {{ "%+.1f"|format(commune.evolution_maison) }}% sur 1 an
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if commune.nb_transactions_12m %}
+                <div class="stat-card stat-card-secondary">
+                    <span class="stat-icon">📊</span>
+                    <div class="stat-content">
+                        <span class="stat-value">{{ commune.nb_transactions_12m }}</span>
+                        <span class="stat-label">Ventes sur 12 mois</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="no-data-message">
+                <p>Données insuffisantes pour cette commune. Essayez notre outil d'estimation pour obtenir une évaluation basée sur les communes voisines.</p>
+            </div>
+            {% endif %}
+        </header>
+
+        <!-- Main Content -->
+        <main class="commune-content">
+
+            <!-- Market Analysis Section -->
+            <section class="market-analysis">
+                <h2>Analyse du marché immobilier à {{ commune.nom }}</h2>
+
+                <div class="analysis-text">
+                    <p>
+                        Le marché immobilier à <strong>{{ commune.nom }}</strong> ({{ commune.code_postal }})
+                        {% if commune.departement %}dans le département {{ commune.departement.nom }}{% endif %}
+                        {% if commune.prix_m2_appartement %}
+                        affiche un prix moyen de <strong>{{ "%.0f"|format(commune.prix_m2_appartement) }} €/m²</strong> pour les appartements
+                        {% if comparison_appart %}
+                            , soit <strong>{{ "%+.0f"|format(comparison_appart) }}%</strong>
+                            {% if comparison_appart > 0 %}au-dessus{% else %}en dessous{% endif %}
+                            de la moyenne départementale
+                        {% endif %}.
+                        {% endif %}
+                        {% if commune.prix_m2_maison %}
+                        Les maisons se négocient en moyenne à <strong>{{ "%.0f"|format(commune.prix_m2_maison) }} €/m²</strong>
+                        {% if comparison_maison %}
+                            ({{ "%+.0f"|format(comparison_maison) }}% vs département)
+                        {% endif %}.
+                        {% endif %}
+                    </p>
+
+                    {% if commune.nb_transactions_12m %}
+                    <p>
+                        Sur les 12 derniers mois, <strong>{{ commune.nb_transactions_12m }} transactions</strong>
+                        ont été enregistrées à {{ commune.nom }}.
+                        {% if commune.surface_moyenne %}
+                        La surface moyenne des biens vendus est de <strong>{{ "%.0f"|format(commune.surface_moyenne) }} m²</strong>.
+                        {% endif %}
+                        {% if commune.prix_min and commune.prix_max %}
+                        Les prix au m² observés varient de {{ "%.0f"|format(commune.prix_min) }} € à {{ "%.0f"|format(commune.prix_max) }} €/m².
+                        {% endif %}
+                    </p>
+                    {% endif %}
+
+                    {% if commune.population %}
+                    <p>
+                        {{ commune.nom }} compte <strong>{{ "{:,}".format(commune.population).replace(",", " ") }} habitants</strong>.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Comparison Cards -->
+                {% if commune.departement and (commune.departement.prix_m2_appartement or commune.departement.prix_m2_maison) %}
+                <div class="comparison-section">
+                    <h3>Comparaison avec {{ commune.departement.nom }}</h3>
+                    <div class="comparison-cards">
+                        {% if comparison_appart is not none %}
+                        <div class="comparison-card">
+                            <span class="comparison-badge {% if comparison_appart > 0 %}badge-high{% elif comparison_appart < 0 %}badge-low{% else %}badge-neutral{% endif %}">
+                                {{ "%+.0f"|format(comparison_appart) }}%
+                            </span>
+                            <span class="comparison-label">vs moyenne {{ commune.departement.nom }} (appart)</span>
+                        </div>
+                        {% endif %}
+
+                        {% if comparison_maison is not none %}
+                        <div class="comparison-card">
+                            <span class="comparison-badge {% if comparison_maison > 0 %}badge-high{% elif comparison_maison < 0 %}badge-low{% else %}badge-neutral{% endif %}">
+                                {{ "%+.0f"|format(comparison_maison) }}%
+                            </span>
+                            <span class="comparison-label">vs moyenne {{ commune.departement.nom }} (maison)</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Nearby Communes Section -->
+            {% if voisines %}
+            <section class="nearby-section">
+                <h2>Prix immobilier autour de {{ commune.nom }}</h2>
+                <p>Découvrez les prix dans les communes voisines :</p>
+
+                <div class="nearby-grid">
+                    {% for voisine in voisines %}
+                    <a href="/prix-immobilier/{{ voisine.slug }}" class="nearby-card">
+                        <span class="nearby-name">{{ voisine.nom }}</span>
+                        <span class="nearby-cp">{{ voisine.code_postal }}</span>
+                        {% if voisine.prix_m2_appartement or voisine.prix_m2_maison %}
+                        <span class="nearby-price">
+                            {% if voisine.prix_m2_appartement %}
+                            {{ "%.0f"|format(voisine.prix_m2_appartement) }} €/m²
+                            {% elif voisine.prix_m2_maison %}
+                            {{ "%.0f"|format(voisine.prix_m2_maison) }} €/m²
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- CTA Section -->
+            <section class="commune-cta">
+                <h2>Estimez votre bien à {{ commune.nom }}</h2>
+                <p>
+                    Obtenez une estimation précise basée sur
+                    {% if commune.nb_transactions_12m %}{{ commune.nb_transactions_12m }} transactions réelles{% else %}les données DVF{% endif %}
+                    dans votre commune.
+                </p>
+                <a href="/estimation?cp={{ commune.code_postal }}" class="btn-primary btn-large">
+                    Estimer gratuitement mon bien
+                </a>
+                <p class="cta-subtext">Gratuit, sans inscription, résultat immédiat</p>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="commune-faq">
+                <h2>Questions fréquentes sur l'immobilier à {{ commune.nom }}</h2>
+
+                <details class="faq-item">
+                    <summary>Quel est le prix moyen au m² à {{ commune.nom }} ?</summary>
+                    <p>
+                        {% if commune.prix_m2_appartement %}
+                        Le prix moyen au m² pour un appartement à {{ commune.nom }} est de {{ "%.0f"|format(commune.prix_m2_appartement) }} €/m².
+                        {% endif %}
+                        {% if commune.prix_m2_maison %}
+                        Pour une maison, le prix moyen est de {{ "%.0f"|format(commune.prix_m2_maison) }} €/m².
+                        {% endif %}
+                        {% if not commune.prix_m2_appartement and not commune.prix_m2_maison %}
+                        Les données sont insuffisantes pour cette commune. Utilisez notre outil d'estimation pour obtenir une évaluation précise.
+                        {% endif %}
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Comment évoluent les prix immobiliers à {{ commune.nom }} ?</summary>
+                    <p>
+                        {% if commune.evolution_appartement %}
+                        Sur les 12 derniers mois, les prix des appartements ont évolué de {{ "%+.1f"|format(commune.evolution_appartement) }}%.
+                        {% endif %}
+                        {% if commune.evolution_maison %}
+                        Les prix des maisons ont évolué de {{ "%+.1f"|format(commune.evolution_maison) }}%.
+                        {% endif %}
+                        {% if not commune.evolution_appartement and not commune.evolution_maison %}
+                        L'évolution des prix n'est pas disponible par manque de données suffisantes sur la période.
+                        {% endif %}
+                    </p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>D'où viennent ces données ?</summary>
+                    <p>
+                        Toutes les données présentées proviennent de la base DVF (Demandes de Valeurs Foncières),
+                        publiée par l'État français. Elle recense toutes les transactions immobilières réelles
+                        enregistrées par les notaires depuis 2014.
+                    </p>
+                </details>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

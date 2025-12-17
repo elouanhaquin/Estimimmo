@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Estimation immobilière gratuite | EstimImmo</title>
+    <meta name="description" content="Estimez gratuitement la valeur de votre bien immobilier en 2 minutes. Basé sur les transactions réelles DVF.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}estimation">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}estimation">
+    <meta property="og:title" content="Estimation immobilière gratuite | EstimImmo">
+    <meta property="og:description" content="Estimez gratuitement la valeur de votre bien immobilier en 2 minutes.">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link active">Estimer</a>
+                <a href="/a-propos" class="nav-link">À propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <h1>Estimez votre bien immobilier</h1>
+            <p>Remplissez le formulaire ci-dessous pour obtenir une estimation basée sur les transactions réelles</p>
+        </header>
+
+        <!-- Main Form -->
+        <main class="main-content">
+            <form id="estimation-form" class="estimation-form">
+                <!-- Step 1: Type & Location -->
+                <div class="form-card">
+                    <div class="card-header">
+                        <span class="step-number">1</span>
+                        <div>
+                            <h2>Votre bien</h2>
+                            <p>Type et localisation</p>
+                        </div>
+                    </div>
+
+                    <div class="type-selector">
+                        <label class="type-option selected" data-type="appartement">
+                            <input type="radio" name="type_bien" value="appartement" checked>
+                            <span class="type-icon">🏢</span>
+                            <span class="type-label">Appartement</span>
+                        </label>
+                        <label class="type-option" data-type="maison">
+                            <input type="radio" name="type_bien" value="maison">
+                            <span class="type-icon">🏡</span>
+                            <span class="type-label">Maison</span>
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="code_postal">Code postal</label>
+                        <input type="text" id="code_postal" name="code_postal"
+                               placeholder="Ex: 75001" pattern="[0-9]{5}" maxlength="5" required>
+                    </div>
+                </div>
+
+                <!-- Step 2: Surface & Rooms -->
+                <div class="form-card">
+                    <div class="card-header">
+                        <span class="step-number">2</span>
+                        <div>
+                            <h2>Caractéristiques</h2>
+                            <p>Surface et pièces</p>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="surface">Surface (m²)</label>
+                            <input type="number" id="surface" name="surface"
+                                   placeholder="Ex: 65" min="9" max="1000" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="nb_pieces">Pièces</label>
+                            <input type="number" id="nb_pieces" name="nb_pieces"
+                                   placeholder="Ex: 3" min="1" max="20" required>
+                        </div>
+                    </div>
+
+                    <!-- Appartement specific -->
+                    <div id="appart-fields" class="conditional-fields">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="etage">Etage</label>
+                                <input type="number" id="etage" name="etage"
+                                       placeholder="Ex: 3" min="0" max="50">
+                            </div>
+                            <div class="input-group">
+                                <label for="nb_etages_immeuble">Etages immeuble</label>
+                                <input type="number" id="nb_etages_immeuble" name="nb_etages_immeuble"
+                                       placeholder="Ex: 5" min="1" max="50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Maison specific -->
+                    <div id="maison-fields" class="conditional-fields hidden">
+                        <div class="input-group">
+                            <label for="surface_terrain">Surface terrain (m²)</label>
+                            <input type="number" id="surface_terrain" name="surface_terrain"
+                                   placeholder="Ex: 500" min="0" max="100000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: State & Equipment -->
+                <div class="form-card">
+                    <div class="card-header">
+                        <span class="step-number">3</span>
+                        <div>
+                            <h2>État & Équipements</h2>
+                            <p>Affinez votre estimation</p>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="etat_general">Etat general</label>
+                            <select id="etat_general" name="etat_general">
+                                <option value="a_renover">A renover</option>
+                                <option value="correct">Correct</option>
+                                <option value="bon" selected>Bon etat</option>
+                                <option value="tres_bon">Tres bon etat</option>
+                                <option value="neuf">Neuf / Refait a neuf</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="dpe">DPE</label>
+                            <select id="dpe" name="dpe">
+                                <option value="">Non renseigne</option>
+                                <option value="A">A - Excellent</option>
+                                <option value="B">B - Tres bon</option>
+                                <option value="C">C - Bon</option>
+                                <option value="D">D - Moyen</option>
+                                <option value="E">E - Passable</option>
+                                <option value="F">F - Mauvais</option>
+                                <option value="G">G - Tres mauvais</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="checkbox-section-title">Espaces & Rangements</p>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-card" id="ascenseur-option">
+                            <input type="checkbox" name="ascenseur" value="true">
+                            <span class="checkbox-icon">🛗</span>
+                            <span class="checkbox-label">Ascenseur</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="balcon_terrasse" value="true">
+                            <span class="checkbox-icon">🌅</span>
+                            <span class="checkbox-label">Balcon/Terrasse</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="parking" value="true">
+                            <span class="checkbox-icon">🚗</span>
+                            <span class="checkbox-label">Parking</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="cave" value="true">
+                            <span class="checkbox-icon">📦</span>
+                            <span class="checkbox-label">Cave</span>
+                        </label>
+                        <label class="checkbox-card" id="jardin-option">
+                            <input type="checkbox" name="jardin" value="true">
+                            <span class="checkbox-icon">🌿</span>
+                            <span class="checkbox-label">Jardin</span>
+                        </label>
+                        <label class="checkbox-card" id="veranda-option" style="display: none;">
+                            <input type="checkbox" name="veranda" value="true">
+                            <span class="checkbox-icon">🏠</span>
+                            <span class="checkbox-label">Véranda</span>
+                        </label>
+                        <label class="checkbox-card" id="dependances-option" style="display: none;">
+                            <input type="checkbox" name="dependances" value="true">
+                            <span class="checkbox-icon">🏚️</span>
+                            <span class="checkbox-label">Dépendances</span>
+                        </label>
+                    </div>
+
+                    <p class="checkbox-section-title">Confort & Équipements</p>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="cuisine_equipee" value="true">
+                            <span class="checkbox-icon">🍳</span>
+                            <span class="checkbox-label">Cuisine équipée</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="double_vitrage" value="true">
+                            <span class="checkbox-icon">🪟</span>
+                            <span class="checkbox-label">Double vitrage</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="climatisation" value="true">
+                            <span class="checkbox-icon">❄️</span>
+                            <span class="checkbox-label">Climatisation</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="cheminee" value="true">
+                            <span class="checkbox-icon">🔥</span>
+                            <span class="checkbox-label">Cheminée</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="parquet" value="true">
+                            <span class="checkbox-icon">🪵</span>
+                            <span class="checkbox-label">Parquet</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="fibre" value="true">
+                            <span class="checkbox-icon">📡</span>
+                            <span class="checkbox-label">Fibre optique</span>
+                        </label>
+                    </div>
+
+                    <p class="checkbox-section-title">Sécurité</p>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="alarme" value="true">
+                            <span class="checkbox-icon">🚨</span>
+                            <span class="checkbox-label">Alarme</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="digicode" value="true">
+                            <span class="checkbox-icon">🔐</span>
+                            <span class="checkbox-label">Digicode</span>
+                        </label>
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="gardien" value="true">
+                            <span class="checkbox-icon">👮</span>
+                            <span class="checkbox-label">Gardien</span>
+                        </label>
+                        <label class="checkbox-card" id="portail-option" style="display: none;">
+                            <input type="checkbox" name="portail_auto" value="true">
+                            <span class="checkbox-icon">🚧</span>
+                            <span class="checkbox-label">Portail auto</span>
+                        </label>
+                    </div>
+
+                    <!-- Maison premium features -->
+                    <div id="maison-premium" class="hidden">
+                        <p class="checkbox-section-title">Extérieur & Loisirs</p>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="piscine" value="true">
+                                <span class="checkbox-icon">🏊</span>
+                                <span class="checkbox-label">Piscine</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="potager" value="true">
+                                <span class="checkbox-icon">🥕</span>
+                                <span class="checkbox-label">Potager</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="spa" value="true">
+                                <span class="checkbox-icon">🛁</span>
+                                <span class="checkbox-label">Spa/Jacuzzi</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="terrain_tennis" value="true">
+                                <span class="checkbox-icon">🎾</span>
+                                <span class="checkbox-label">Tennis</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="abri_jardin" value="true">
+                                <span class="checkbox-icon">🏡</span>
+                                <span class="checkbox-label">Abri de jardin</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="arrosage_auto" value="true">
+                                <span class="checkbox-icon">💧</span>
+                                <span class="checkbox-label">Arrosage auto</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Advanced (collapsible) -->
+                <details class="form-card advanced-section">
+                    <summary class="card-header clickable">
+                        <span class="step-number">+</span>
+                        <div>
+                            <h2>Options avancées</h2>
+                            <p>Affiner encore plus (optionnel)</p>
+                        </div>
+                        <span class="expand-icon">▼</span>
+                    </summary>
+
+                    <div class="advanced-content">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="exposition">Exposition</label>
+                                <select id="exposition" name="exposition">
+                                    <option value="">Non renseigné</option>
+                                    <option value="nord">Nord</option>
+                                    <option value="est">Est</option>
+                                    <option value="ouest">Ouest</option>
+                                    <option value="sud">Sud</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="vue">Vue</label>
+                                <select id="vue" name="vue">
+                                    <option value="">Non renseigné</option>
+                                    <option value="vis_a_vis">Vis-à-vis</option>
+                                    <option value="degagee">Dégagée</option>
+                                    <option value="exceptionnelle">Exceptionnelle</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="standing">Standing</label>
+                                <select id="standing" name="standing">
+                                    <option value="economique">Économique</option>
+                                    <option value="standard" selected>Standard</option>
+                                    <option value="standing">Standing</option>
+                                    <option value="luxe">Luxe</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Submit -->
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Estimer mon bien</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </form>
+
+            <!-- Results Section -->
+            <div id="results" class="results-section hidden">
+                <div class="results-card">
+                    <div class="results-header">
+                        <h2>Estimation de votre bien</h2>
+                        <button type="button" class="close-btn" onclick="closeResults()">×</button>
+                    </div>
+
+                    <div id="zone-info" class="zone-alert hidden">
+                        <span class="zone-icon">i</span>
+                        <span id="zone-message"></span>
+                    </div>
+
+                    <div class="price-display">
+                        <div class="price-range">
+                            <div class="price-item price-low">
+                                <span class="price-label">Estimation basse</span>
+                                <span class="price-value" id="result-low">-</span>
+                            </div>
+                            <div class="price-item price-main">
+                                <span class="price-label">Estimation</span>
+                                <span class="price-value" id="result-mid">-</span>
+                                <span class="price-badge">Valeur probable</span>
+                            </div>
+                            <div class="price-item price-high">
+                                <span class="price-label">Estimation haute</span>
+                                <span class="price-value" id="result-high">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-grid">
+                        <div class="detail-card">
+                            <span class="detail-icon">📊</span>
+                            <span class="detail-label">Prix/m² zone</span>
+                            <span class="detail-value" id="result-price-zone">-</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-icon">🎯</span>
+                            <span class="detail-label">Prix/m² ajusté</span>
+                            <span class="detail-value" id="result-price-adjusted">-</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-icon">📈</span>
+                            <span class="detail-label">Ajustement</span>
+                            <span class="detail-value" id="result-adjustment">-</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-icon">🏘️</span>
+                            <span class="detail-label">Transactions</span>
+                            <span class="detail-value" id="result-transactions">-</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-icon">⭐</span>
+                            <span class="detail-label">Confiance</span>
+                            <span class="detail-value" id="result-confidence">-</span>
+                        </div>
+                    </div>
+
+                    <details class="adjustments-details">
+                        <summary>Voir le detail des ajustements</summary>
+                        <ul id="adjustments-list" class="adjustments-list"></ul>
+                    </details>
+
+                    <div class="disclaimer">
+                        <strong>Note :</strong> Cette estimation est basée sur les données DVF
+                        (transactions réelles). Elle est indicative et ne remplace pas l'avis d'un professionnel.
+                    </div>
+
+                    <button type="button" class="new-estimation-btn" onclick="newEstimation()">
+                        Nouvelle estimation
+                    </button>
+                </div>
+
+                <!-- Conversion Section (shown first) -->
+                <div id="conversion-section" class="conversion-section hidden">
+                    <div class="conversion-card">
+                        <!-- Estimation Preview -->
+                        <div class="estimation-ready-banner">
+                            <div class="ready-icon">✓</div>
+                            <div class="ready-text">
+                                <h2>Votre estimation est prête !</h2>
+                                <p>Valeur estimée de votre bien</p>
+                            </div>
+                        </div>
+
+                        <div class="estimation-preview">
+                            <div class="preview-price" id="preview-price">--- --- €</div>
+                            <div class="preview-blur-overlay">
+                                <span>🔒</span>
+                            </div>
+                        </div>
+
+                        <!-- Upsell Section -->
+                        <div class="upsell-section">
+                            <h3>📈 Optimisez votre estimation gratuitement</h3>
+                            <p>Un conseiller expert peut affiner ce résultat et vous faire gagner en moyenne <strong>+8%</strong> sur le prix de vente.</p>
+
+                            <div class="upsell-benefits">
+                                <div class="benefit-item">
+                                    <span class="benefit-check">✓</span>
+                                    <span>Analyse personnalisée de votre bien</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <span class="benefit-check">✓</span>
+                                    <span>Conseils pour maximiser la valeur</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <span class="benefit-check">✓</span>
+                                    <span>100% gratuit, sans engagement</span>
+                                </div>
+                            </div>
+
+                            <div id="cta-options" class="cta-options">
+                                <button type="button" class="cta-card cta-primary" onclick="showCallbackForm()">
+                                    <span class="cta-icon">📞</span>
+                                    <div class="cta-content">
+                                        <strong>Être rappelé</strong>
+                                        <span>Sous 24h par un expert</span>
+                                    </div>
+                                </button>
+                                <button type="button" class="cta-card" onclick="showVisitForm()">
+                                    <span class="cta-icon">🏠</span>
+                                    <div class="cta-content">
+                                        <strong>Visite gratuite</strong>
+                                        <span>Estimation à domicile</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="button" id="skip-conversion-btn" class="skip-btn" onclick="skipToEstimation()">
+                            Non merci, voir directement mon estimation →
+                        </button>
+
+                    <!-- Callback Form -->
+                    <div id="callback-form-container" class="lead-form-container hidden">
+                        <button type="button" class="back-btn" onclick="hideLeadForms()">Retour</button>
+                        <h4>Demande de rappel</h4>
+                        <p>Un conseiller vous contactera dans les 24h pour répondre à vos questions.</p>
+                        <form id="callback-form" class="lead-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="callback-nom">Nom *</label>
+                                    <input type="text" id="callback-nom" name="nom" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="callback-prenom">Prénom *</label>
+                                    <input type="text" id="callback-prenom" name="prenom" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="callback-tel">Téléphone *</label>
+                                <input type="tel" id="callback-tel" name="telephone" placeholder="06 XX XX XX XX" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="callback-email">Email</label>
+                                <input type="email" id="callback-email" name="email" placeholder="optionnel">
+                            </div>
+                            <div class="form-group">
+                                <label for="callback-horaires">Horaires de disponibilité</label>
+                                <select id="callback-horaires" name="horaires">
+                                    <option value="matin">Le matin (9h-12h)</option>
+                                    <option value="midi">Le midi (12h-14h)</option>
+                                    <option value="aprem" selected>L'après-midi (14h-18h)</option>
+                                    <option value="soir">En soirée (18h-20h)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="callback-projet">Votre projet</label>
+                                <select id="callback-projet" name="projet">
+                                    <option value="vente">Je souhaite vendre</option>
+                                    <option value="estimation">Simple curiosité / estimation</option>
+                                    <option value="succession">Succession / Partage</option>
+                                    <option value="investissement">Projet d'investissement</option>
+                                </select>
+                            </div>
+                            <label class="consent-checkbox">
+                                <input type="checkbox" name="consent" required>
+                                <span>J'accepte d'être recontacté par EstimImmo. <a href="/politique-confidentialite" target="_blank">Politique de confidentialité</a></span>
+                            </label>
+                            <button type="submit" class="btn-primary btn-full">Demander un rappel</button>
+                        </form>
+                    </div>
+
+                    <!-- Visit Form -->
+                    <div id="visit-form-container" class="lead-form-container hidden">
+                        <button type="button" class="back-btn" onclick="hideLeadForms()">Retour</button>
+                        <h4>Planifier une visite d'estimation</h4>
+                        <p>Un conseiller se déplace gratuitement pour évaluer votre bien sur place.</p>
+                        <form id="visit-form" class="lead-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="visit-nom">Nom *</label>
+                                    <input type="text" id="visit-nom" name="nom" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visit-prenom">Prénom *</label>
+                                    <input type="text" id="visit-prenom" name="prenom" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="visit-tel">Téléphone *</label>
+                                    <input type="tel" id="visit-tel" name="telephone" placeholder="06 XX XX XX XX" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visit-email">Email *</label>
+                                    <input type="email" id="visit-email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="visit-adresse">Adresse du bien *</label>
+                                <input type="text" id="visit-adresse" name="adresse" placeholder="Rue, numéro" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="visit-date">Date souhaitée *</label>
+                                    <input type="date" id="visit-date" name="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visit-creneau">Créneau</label>
+                                    <select id="visit-creneau" name="creneau">
+                                        <option value="matin">Matin (9h-12h)</option>
+                                        <option value="aprem" selected>Après-midi (14h-18h)</option>
+                                        <option value="soir">Soirée (18h-20h)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="visit-message">Message (optionnel)</label>
+                                <textarea id="visit-message" name="message" rows="3" placeholder="Informations complémentaires sur votre bien ou votre projet..."></textarea>
+                            </div>
+                            <label class="consent-checkbox">
+                                <input type="checkbox" name="consent" required>
+                                <span>J'accepte d'être recontacté par EstimImmo. <a href="/politique-confidentialite" target="_blank">Politique de confidentialité</a></span>
+                            </label>
+                            <button type="submit" class="btn-primary btn-full">Planifier la visite</button>
+                        </form>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="lead-success" class="lead-success hidden">
+                        <div class="success-content">
+                            <span class="success-icon-large">✓</span>
+                            <h4>Demande envoyée !</h4>
+                            <p id="success-message">Un conseiller vous contactera très prochainement.</p>
+                        </div>
+                    </div>
+
+                    <p class="trust-note">Plus de 500 propriétaires accompagnés cette année</p>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="error-message" class="error-section hidden">
+                <div class="error-card">
+                    <span class="error-icon">!</span>
+                    <p id="error-text"></p>
+                    <button type="button" onclick="closeError()">Reessayer</button>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="loading-overlay hidden">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p>Analyse des transactions en cours...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Type selector
+        document.querySelectorAll('.type-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const type = this.dataset.type;
+                const isMaison = type === 'maison';
+
+                document.getElementById('appart-fields').classList.toggle('hidden', isMaison);
+                document.getElementById('maison-fields').classList.toggle('hidden', !isMaison);
+                document.getElementById('maison-premium').classList.toggle('hidden', !isMaison);
+
+                // Show/hide specific options
+                document.getElementById('jardin-option').style.display = isMaison ? 'flex' : 'none';
+                document.getElementById('veranda-option').style.display = isMaison ? 'flex' : 'none';
+                document.getElementById('dependances-option').style.display = isMaison ? 'flex' : 'none';
+                document.getElementById('portail-option').style.display = isMaison ? 'flex' : 'none';
+                document.getElementById('ascenseur-option').style.display = isMaison ? 'none' : 'flex';
+            });
+        });
+
+        // Form submission
+        document.getElementById('estimation-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const error = document.getElementById('error-message');
+
+            loading.classList.remove('hidden');
+            results.classList.add('hidden');
+            error.classList.add('hidden');
+
+            const formData = new FormData(this);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                if (value !== '') data[key] = value;
+            });
+
+            // Type conversions
+            if (data.surface) data.surface = parseFloat(data.surface);
+            if (data.nb_pieces) data.nb_pieces = parseInt(data.nb_pieces);
+            if (data.etage) data.etage = parseInt(data.etage);
+            if (data.nb_etages_immeuble) data.nb_etages_immeuble = parseInt(data.nb_etages_immeuble);
+            if (data.surface_terrain) data.surface_terrain = parseFloat(data.surface_terrain);
+
+            // Booleans - Espaces
+            data.ascenseur = data.ascenseur === 'true';
+            data.balcon_terrasse = data.balcon_terrasse === 'true';
+            data.parking = data.parking === 'true';
+            data.cave = data.cave === 'true';
+            data.jardin = data.jardin === 'true';
+            data.veranda = data.veranda === 'true';
+            data.dependances = data.dependances === 'true';
+
+            // Booleans - Confort
+            data.cuisine_equipee = data.cuisine_equipee === 'true';
+            data.double_vitrage = data.double_vitrage === 'true';
+            data.climatisation = data.climatisation === 'true';
+            data.cheminee = data.cheminee === 'true';
+            data.parquet = data.parquet === 'true';
+            data.fibre = data.fibre === 'true';
+
+            // Booleans - Sécurité
+            data.alarme = data.alarme === 'true';
+            data.digicode = data.digicode === 'true';
+            data.gardien = data.gardien === 'true';
+            data.portail_auto = data.portail_auto === 'true';
+
+            // Booleans - Maison extérieur
+            data.piscine = data.piscine === 'true';
+            data.potager = data.potager === 'true';
+            data.spa = data.spa === 'true';
+            data.terrain_tennis = data.terrain_tennis === 'true';
+            data.abri_jardin = data.abri_jardin === 'true';
+            data.arrosage_auto = data.arrosage_auto === 'true';
+
+            try {
+                const response = await fetch('/api/estimate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                loading.classList.add('hidden');
+
+                if (result.erreur) {
+                    document.getElementById('error-text').textContent = result.message;
+                    error.classList.remove('hidden');
+                } else {
+                    // Store result and show conversion section first
+                    window.currentEstimationResult = result;
+                    displayResults(result);
+
+                    // Show preview price (blurred)
+                    const formatPrice = (price) => new Intl.NumberFormat('fr-FR', {
+                        style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+                    }).format(price);
+                    document.getElementById('preview-price').textContent = formatPrice(result.estimation_moyenne);
+
+                    // Show conversion section, hide actual results
+                    document.querySelector('.results-card').classList.add('hidden');
+                    document.getElementById('conversion-section').classList.remove('hidden');
+                    results.classList.remove('hidden');
+                    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } catch (err) {
+                loading.classList.add('hidden');
+                document.getElementById('error-text').textContent = 'Erreur de connexion au serveur.';
+                error.classList.remove('hidden');
+            }
+        });
+
+        function displayResults(result) {
+            const formatPrice = (price) => new Intl.NumberFormat('fr-FR', {
+                style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+            }).format(price);
+
+            document.getElementById('result-low').textContent = formatPrice(result.estimation_basse);
+            document.getElementById('result-mid').textContent = formatPrice(result.estimation_moyenne);
+            document.getElementById('result-high').textContent = formatPrice(result.estimation_haute);
+            document.getElementById('result-price-zone').textContent = formatPrice(result.prix_m2_zone) + '/m²';
+            document.getElementById('result-price-adjusted').textContent = formatPrice(result.prix_m2_ajuste) + '/m²';
+            document.getElementById('result-adjustment').textContent = result.ajustement_total;
+            document.getElementById('result-transactions').textContent = result.nb_transactions_reference;
+
+            const confidenceLabels = {
+                'haute': 'Haute',
+                'moyenne': 'Moyenne',
+                'faible': 'Faible',
+                'tres_faible': 'Tres faible'
+            };
+            document.getElementById('result-confidence').textContent = confidenceLabels[result.confiance] || result.confiance;
+
+            // Zone info
+            const zoneInfo = document.getElementById('zone-info');
+            if (result.zone_elargie) {
+                document.getElementById('zone-message').textContent = result.message_zone;
+                zoneInfo.classList.remove('hidden');
+            } else {
+                zoneInfo.classList.add('hidden');
+            }
+
+            // Adjustments
+            const list = document.getElementById('adjustments-list');
+            list.innerHTML = '';
+
+            const labels = {
+                'etage': 'Étage', 'ascenseur': 'Ascenseur', 'etat': 'État',
+                'balcon_terrasse': 'Balcon/Terrasse', 'parking': 'Parking',
+                'cave': 'Cave', 'jardin': 'Jardin', 'dpe': 'DPE',
+                'exposition': 'Exposition', 'vue': 'Vue', 'standing': 'Standing',
+                'veranda': 'Véranda', 'dependances': 'Dépendances',
+                'cuisine_equipee': 'Cuisine équipée', 'double_vitrage': 'Double vitrage',
+                'climatisation': 'Climatisation', 'cheminee': 'Cheminée',
+                'parquet': 'Parquet', 'fibre': 'Fibre optique',
+                'alarme': 'Alarme', 'digicode': 'Digicode', 'gardien': 'Gardien',
+                'portail_auto': 'Portail auto', 'piscine': 'Piscine', 'potager': 'Potager',
+                'spa': 'Spa/Jacuzzi', 'terrain_tennis': 'Tennis',
+                'abri_jardin': 'Abri jardin', 'arrosage_auto': 'Arrosage auto'
+            };
+
+            for (const [key, value] of Object.entries(result.ajustements)) {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${labels[key] || key}</span><span class="${value.startsWith('+') ? 'positive' : 'negative'}">${value}</span>`;
+                list.appendChild(li);
+            }
+
+            if (result.valeur_terrain) {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>Valeur terrain</span><span>${formatPrice(result.valeur_terrain)}</span>`;
+                list.appendChild(li);
+            }
+        }
+
+        function closeResults() {
+            document.getElementById('results').classList.add('hidden');
+        }
+
+        function closeError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        function newEstimation() {
+            document.getElementById('results').classList.add('hidden');
+            document.querySelector('.results-card').classList.add('hidden');
+            document.getElementById('conversion-section').classList.add('hidden');
+            // Reset conversion section elements
+            document.querySelector('.estimation-ready-banner').classList.remove('hidden');
+            document.querySelector('.estimation-preview').classList.remove('hidden');
+            document.querySelector('.upsell-section').classList.remove('hidden');
+            document.getElementById('skip-conversion-btn').classList.remove('hidden');
+            document.getElementById('estimation-form').reset();
+            resetLeadForms();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function skipToEstimation() {
+            // Hide conversion section, show results
+            document.getElementById('conversion-section').classList.add('hidden');
+            document.querySelector('.results-card').classList.remove('hidden');
+            document.querySelector('.results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Lead form functions
+        function showCallbackForm() {
+            document.querySelector('.estimation-ready-banner').classList.add('hidden');
+            document.querySelector('.estimation-preview').classList.add('hidden');
+            document.querySelector('.upsell-section').classList.add('hidden');
+            document.getElementById('skip-conversion-btn').classList.add('hidden');
+            document.getElementById('callback-form-container').classList.remove('hidden');
+        }
+
+        function showVisitForm() {
+            document.querySelector('.estimation-ready-banner').classList.add('hidden');
+            document.querySelector('.estimation-preview').classList.add('hidden');
+            document.querySelector('.upsell-section').classList.add('hidden');
+            document.getElementById('skip-conversion-btn').classList.add('hidden');
+            document.getElementById('visit-form-container').classList.remove('hidden');
+            // Set min date to today
+            document.getElementById('visit-date').min = new Date().toISOString().split('T')[0];
+        }
+
+        function hideLeadForms() {
+            document.getElementById('callback-form-container').classList.add('hidden');
+            document.getElementById('visit-form-container').classList.add('hidden');
+            document.querySelector('.estimation-ready-banner').classList.remove('hidden');
+            document.querySelector('.estimation-preview').classList.remove('hidden');
+            document.querySelector('.upsell-section').classList.remove('hidden');
+            document.getElementById('skip-conversion-btn').classList.remove('hidden');
+        }
+
+        function resetLeadForms() {
+            hideLeadForms();
+            document.getElementById('lead-success').classList.add('hidden');
+            document.getElementById('callback-form').reset();
+            document.getElementById('visit-form').reset();
+        }
+
+        // Get current estimation data
+        function getCurrentEstimation() {
+            return {
+                code_postal: document.getElementById('code_postal').value,
+                type_bien: document.querySelector('input[name="type_bien"]:checked')?.value,
+                surface: document.getElementById('surface').value,
+                nb_pieces: document.getElementById('nb_pieces').value,
+                estimation_basse: document.getElementById('result-low').textContent,
+                estimation_moyenne: document.getElementById('result-mid').textContent,
+                estimation_haute: document.getElementById('result-high').textContent
+            };
+        }
+
+        // Callback form submission
+        document.getElementById('callback-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {
+                type: 'callback',
+                nom: formData.get('nom'),
+                prenom: formData.get('prenom'),
+                telephone: formData.get('telephone'),
+                email: formData.get('email') || null,
+                horaires: formData.get('horaires'),
+                projet: formData.get('projet'),
+                estimation: getCurrentEstimation(),
+                date_demande: new Date().toISOString()
+            };
+
+            try {
+                // Send to backend API
+                const response = await fetch('/api/leads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Erreur serveur');
+
+                // Show success
+                document.getElementById('callback-form-container').classList.add('hidden');
+                document.getElementById('lead-success').classList.remove('hidden');
+                document.getElementById('success-message').textContent =
+                    'Un conseiller vous rappellera dans les 24h sur le ' + data.telephone;
+
+            } catch (err) {
+                // Fallback: store locally
+                const leads = JSON.parse(localStorage.getItem('estimoimmo_leads') || '[]');
+                leads.push(data);
+                localStorage.setItem('estimoimmo_leads', JSON.stringify(leads));
+
+                document.getElementById('callback-form-container').classList.add('hidden');
+                document.getElementById('lead-success').classList.remove('hidden');
+                document.getElementById('success-message').textContent =
+                    'Demande enregistrée ! Un conseiller vous rappellera bientôt.';
+            }
+        });
+
+        // Visit form submission
+        document.getElementById('visit-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {
+                type: 'visit',
+                nom: formData.get('nom'),
+                prenom: formData.get('prenom'),
+                telephone: formData.get('telephone'),
+                email: formData.get('email'),
+                adresse: formData.get('adresse'),
+                date_souhaitee: formData.get('date'),
+                creneau: formData.get('creneau'),
+                message: formData.get('message') || null,
+                estimation: getCurrentEstimation(),
+                date_demande: new Date().toISOString()
+            };
+
+            try {
+                // Send to backend API
+                const response = await fetch('/api/leads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Erreur serveur');
+
+                // Show success
+                document.getElementById('visit-form-container').classList.add('hidden');
+                document.getElementById('lead-success').classList.remove('hidden');
+                document.getElementById('success-message').textContent =
+                    'Visite programmée ! Vous recevrez une confirmation par email à ' + data.email;
+
+            } catch (err) {
+                // Fallback: store locally
+                const leads = JSON.parse(localStorage.getItem('estimoimmo_leads') || '[]');
+                leads.push(data);
+                localStorage.setItem('estimoimmo_leads', JSON.stringify(leads));
+
+                document.getElementById('visit-form-container').classList.add('hidden');
+                document.getElementById('lead-success').classList.remove('hidden');
+                document.getElementById('success-message').textContent =
+                    'Demande de visite enregistrée ! Un conseiller vous contactera pour confirmer.';
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

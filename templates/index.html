@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>EstimImmo - Estimation immobilière gratuite en ligne | Prix au m² France</title>
+    <meta name="description" content="Estimez gratuitement la valeur de votre bien immobilier en 2 minutes. Basé sur les transactions réelles DVF. Appartement, maison, tout type de bien en France.">
+    <meta name="keywords" content="estimation immobilière, prix immobilier, estimation maison, estimation appartement, prix m2, DVF, valeur bien immobilier, estimation gratuite">
+    <meta name="author" content="EstimImmo">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}">
+    <meta property="og:title" content="EstimImmo - Estimation immobilière gratuite en ligne">
+    <meta property="og:description" content="Estimez gratuitement la valeur de votre bien immobilier en 2 minutes. Basé sur les transactions réelles DVF.">
+    <meta property="og:image" content="{{ url_for('static', filename='og-image.png', _external=True) }}">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="EstimImmo">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="EstimImmo - Estimation immobilière gratuite">
+    <meta name="twitter:description" content="Estimez la valeur de votre bien en 2 minutes. Données DVF officielles.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "EstimImmo",
+        "description": "Outil d'estimation immobilière gratuit basé sur les données DVF",
+        "url": "{{ request.url_root }}",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "EstimImmo"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Comment estimer la valeur de mon bien immobilier ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Renseignez le code postal, la surface, le nombre de pièces et les caractéristiques de votre bien. Notre algorithme analyse les transactions réelles DVF pour vous donner une estimation précise."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "D'où viennent les données utilisées ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Les estimations sont basées sur les données DVF (Demandes de Valeurs Foncières), qui recensent toutes les transactions immobilières réelles en France, publiées par l'État."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "L'estimation est-elle gratuite ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Oui, l'estimation est 100% gratuite et illimitée. Aucune inscription requise."
+                }
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">EstimImmo</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link active">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link">A propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="landing-hero">
+            <div class="hero-container">
+                <div class="hero-text">
+                    <h1>Estimez la valeur de votre bien immobilier <span class="gradient-text">gratuitement</span></h1>
+                    <p class="hero-subtitle">Obtenez une estimation fiable en 2 minutes, basée sur les transactions réelles en France.</p>
+                    <div class="hero-cta">
+                        <a href="/estimation" class="btn-primary">Estimer mon bien</a>
+                        <a href="#comment-ca-marche" class="btn-secondary">Comment ça marche ?</a>
+                    </div>
+                    <div class="hero-trust">
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
+                            <span>100% gratuit</span>
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
+                            <span>Sans inscription</span>
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-icon">✓</span>
+                            <span>Données officielles</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="hero-card-header">
+                            <span>Estimation rapide</span>
+                        </div>
+                        <div class="hero-card-content">
+                            <div class="hero-stat-row">
+                                <span>15M+</span>
+                                <span>transactions analysées</span>
+                            </div>
+                            <div class="hero-stat-row">
+                                <span>36 000</span>
+                                <span>communes couvertes</span>
+                            </div>
+                            <div class="hero-stat-row">
+                                <span>2 min</span>
+                                <span>temps moyen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <span class="stat-number">15M+</span>
+                    <span class="stat-label">Transactions analysées</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">36 000</span>
+                    <span class="stat-label">Communes en France</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Gratuit</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">2 min</span>
+                    <span class="stat-label">Pour une estimation</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section id="comment-ca-marche" class="how-section">
+            <div class="section-container">
+                <h2 class="section-title">Comment ça marche ?</h2>
+                <p class="section-subtitle">Une estimation fiable en 3 étapes simples</p>
+
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Decrivez votre bien</h3>
+                        <p>Renseignez le type de bien, la localisation, la surface et le nombre de pieces.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Affinez les criteres</h3>
+                        <p>Ajoutez les caracteristiques : etat, DPE, equipements, etage, exposition...</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Obtenez votre estimation</h3>
+                        <p>Recevez une fourchette de prix basee sur les transactions reelles de votre secteur.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section">
+            <div class="section-container">
+                <h2 class="section-title">Pourquoi choisir EstimImmo ?</h2>
+                <p class="section-subtitle">Des estimations fiables basées sur des données réelles</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Donnees DVF officielles</h3>
+                        <p>Nous utilisons les donnees des Demandes de Valeurs Foncieres, publiees par l'Etat francais. Ce sont les prix reels des transactions immobilieres.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Algorithme precis</h3>
+                        <p>Notre algorithme prend en compte de nombreux criteres : surface, etat, DPE, equipements, etage, exposition... pour affiner l'estimation.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>100% confidentiel</h3>
+                        <p>Aucune inscription requise, aucune donnee personnelle collectee. Votre estimation reste privee.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Resultat instantane</h3>
+                        <p>Obtenez votre estimation en moins de 2 minutes. Pas d'attente, pas de rappel commercial.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Toute la France</h3>
+                        <p>Notre service couvre l'ensemble du territoire francais metropolitain : grandes villes comme zones rurales.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Totalement gratuit</h3>
+                        <p>Estimations illimitees, sans frais caches, sans engagement. Un service gratuit pour tous.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials-section">
+            <div class="section-container">
+                <h2 class="section-title">Ce qu'en disent nos utilisateurs</h2>
+                <p class="section-subtitle">Des milliers de Français nous font confiance</p>
+
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"Très pratique pour avoir une première idée du prix de mon appartement avant de contacter une agence. L'estimation était proche de la réalité !"</p>
+                        <div class="testimonial-author">
+                            <span class="author-name">Marie L.</span>
+                            <span class="author-location">Paris 15e</span>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"Simple, rapide et gratuit. J'ai pu estimer ma maison en quelques clics. Les données DVF donnent confiance dans le résultat."</p>
+                        <div class="testimonial-author">
+                            <span class="author-name">Pierre D.</span>
+                            <span class="author-location">Nantes</span>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                        <p class="testimonial-text">"Enfin un outil qui ne demande pas de numéro de téléphone ! L'estimation m'a aidé à fixer le bon prix pour vendre rapidement."</p>
+                        <div class="testimonial-author">
+                            <span class="author-name">Sophie M.</span>
+                            <span class="author-location">Lyon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq-section">
+            <div class="section-container">
+                <h2 class="section-title">Questions fréquentes</h2>
+
+                <div class="faq-grid">
+                    <details class="faq-item">
+                        <summary>D'où viennent les données utilisées pour l'estimation ?</summary>
+                        <p>Nous utilisons les données DVF (Demandes de Valeurs Foncières), publiées par la Direction Générale des Finances Publiques. Ces données recensent toutes les transactions immobilières réelles en France depuis 2014.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>L'estimation est-elle vraiment gratuite ?</summary>
+                        <p>Oui, totalement gratuite et sans engagement. Vous pouvez faire autant d'estimations que vous le souhaitez. Nous ne demandons aucune inscription ni coordonnées.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Quelle est la fiabilité de l'estimation ?</summary>
+                        <p>L'estimation est basée sur les prix réels des transactions dans votre secteur. Elle prend en compte de nombreux critères pour affiner le résultat. Cependant, elle reste indicative et ne remplace pas l'expertise d'un professionnel.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Mon bien est-il couvert ?</summary>
+                        <p>Nous couvrons l'ensemble de la France métropolitaine : appartements et maisons, en ville comme à la campagne. Pour les zones avec peu de transactions, nous élargissons automatiquement la recherche aux communes voisines.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Mes données sont-elles protégées ?</summary>
+                        <p>Nous ne collectons aucune donnée personnelle. Votre estimation est calculée en temps réel et n'est pas stockée. Aucun cookie de tracking, aucun partage avec des tiers.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Puis-je utiliser cette estimation pour vendre mon bien ?</summary>
+                        <p>Cette estimation vous donne une fourchette de prix réaliste basée sur le marché. Elle constitue un excellent point de départ pour fixer votre prix de vente. Pour une estimation officielle, consultez un professionnel de l'immobilier.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section class="cta-section">
+            <div class="cta-container">
+                <h2>Prêt à estimer votre bien ?</h2>
+                <p>Obtenez une estimation gratuite en moins de 2 minutes</p>
+                <a href="/estimation" class="btn-primary btn-large">Estimer maintenant</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">EstimImmo</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: estimoimmo-web
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - GUNICORN_WORKERS=4
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - estimoimmo-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  db:
+    image: postgres:15-alpine
+    container_name: estimoimmo-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-estimoimmo}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-estimoimmo}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - estimoimmo-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-estimoimmo} -d ${POSTGRES_DB:-estimoimmo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  estimoimmo-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
