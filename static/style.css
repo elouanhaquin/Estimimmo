@@ -2926,6 +2926,9 @@ footer {
     z-index: 9999;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
     display: none;
+    box-sizing: border-box;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .cookie-banner.show {
@@ -2995,13 +2998,17 @@ footer {
 
 @media (max-width: 768px) {
     .cookie-banner {
-        padding: 1rem;
+        padding: 0.75rem 1rem;
+        left: 0;
+        right: 0;
+        width: 100%;
     }
 
     .cookie-content {
         flex-direction: column;
         text-align: center;
-        gap: 1rem;
+        gap: 0.75rem;
+        max-width: 100%;
     }
 
     .cookie-text {
@@ -3010,17 +3017,19 @@ footer {
     }
 
     .cookie-text p {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        word-wrap: break-word;
     }
 
     .cookie-buttons {
         width: 100%;
-        flex-direction: column;
+        flex-direction: row;
         gap: 0.5rem;
     }
 
     .cookie-btn {
-        width: 100%;
-        padding: 0.875rem 1rem;
+        flex: 1;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
     }
 }
