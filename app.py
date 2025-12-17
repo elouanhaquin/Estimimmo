@@ -1,17 +1,63 @@
 """
 Application Flask - Estimateur Immobilier
-Basé sur les données DVF (Demandes de Valeurs Foncières)
+Base sur les donnees DVF (Demandes de Valeurs Foncieres)
 """
 
+import os
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory, Response, abort
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
 from estimator import PropertyEstimator, PropertyCriteria
 from config import get_config
 from models import db, Lead, Commune, Departement, Activity, Consent
+from security import (
+    validate_estimation_data, validate_lead_data, validate_track_data,
+    sanitize_string, validate_code_postal
+)
 
 app = Flask(__name__)
 app.config.from_object(get_config())
+
+# === SECURITE ===
+
+# Protection CSRF
+csrf = CSRFProtect(app)
+
+# Rate Limiting
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
+# Headers de securite (desactive en dev pour faciliter le debug)
+if os.getenv('FLASK_ENV') == 'production':
+    # CSP strict en production
+    csp = {
+        'default-src': "'self'",
+        'script-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
+        'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com",
+        'font-src': "'self' https://fonts.gstatic.com",
+        'img-src': "'self' data:",
+        'connect-src': "'self'",
+    }
+    Talisman(app, content_security_policy=csp, force_https=True)
+else:
+    # Headers basiques en dev (pas de HTTPS force)
+    Talisman(
+        app,
+        content_security_policy=None,  # Desactive CSP en dev
+        force_https=False,
+        session_cookie_secure=False,
+        session_cookie_http_only=True
+    )
+
+# Les exemptions CSRF sont ajoutees via decorateur sur chaque route API
 
 # Initialisation de la base de données
 db.init_app(app)
@@ -195,11 +241,13 @@ def sitemap_communes(page):
 # =====================================================
 
 @app.route('/api/estimate', methods=['POST'])
+@csrf.exempt
+@limiter.limit("30 per minute")  # Rate limit: 30 estimations/minute max
 def api_estimate():
     """
-    API d'estimation immobilière.
+    API d'estimation immobiliere.
 
-    Attend un JSON avec les critères du bien.
+    Attend un JSON avec les criteres du bien.
     Retourne l'estimation avec fourchette basse/moyenne/haute.
     """
     try:
@@ -208,59 +256,58 @@ def api_estimate():
         if not data:
             return jsonify({
                 'erreur': True,
-                'message': 'Données manquantes'
+                'message': 'Donnees manquantes'
             }), 400
 
-        # Validation des champs requis
-        required_fields = ['code_postal', 'surface', 'nb_pieces', 'type_bien']
-        for field in required_fields:
-            if field not in data or data[field] is None:
-                return jsonify({
-                    'erreur': True,
-                    'message': f'Champ requis manquant: {field}'
-                }), 400
+        # Validation securisee des donnees
+        validated, errors = validate_estimation_data(data)
+        if errors:
+            return jsonify({
+                'erreur': True,
+                'message': errors[0]  # Premier message d'erreur
+            }), 400
 
-        # Création des critères
+        # Creation des criteres avec donnees validees
         criteria = PropertyCriteria(
-            code_postal=str(data['code_postal']),
-            surface=float(data['surface']),
-            nb_pieces=int(data['nb_pieces']),
-            type_bien=data['type_bien'],
-            etage=int(data['etage']) if data.get('etage') else None,
-            nb_etages_immeuble=int(data['nb_etages_immeuble']) if data.get('nb_etages_immeuble') else None,
-            ascenseur=data.get('ascenseur', False),
-            balcon_terrasse=data.get('balcon_terrasse', False),
-            parking=data.get('parking', False),
-            cave=data.get('cave', False),
-            jardin=data.get('jardin', False),
-            veranda=data.get('veranda', False),
-            dependances=data.get('dependances', False),
-            surface_terrain=float(data['surface_terrain']) if data.get('surface_terrain') else None,
-            annee_construction=int(data['annee_construction']) if data.get('annee_construction') else None,
-            etat_general=data.get('etat_general', 'bon'),
-            dpe=data.get('dpe') if data.get('dpe') else None,
-            exposition=data.get('exposition') if data.get('exposition') else None,
-            vue=data.get('vue') if data.get('vue') else None,
-            standing=data.get('standing', 'standard'),
-            # Confort & Équipements
-            cuisine_equipee=data.get('cuisine_equipee', False),
-            double_vitrage=data.get('double_vitrage', False),
-            climatisation=data.get('climatisation', False),
-            cheminee=data.get('cheminee', False),
-            parquet=data.get('parquet', False),
-            fibre=data.get('fibre', False),
-            # Sécurité
-            alarme=data.get('alarme', False),
-            digicode=data.get('digicode', False),
-            gardien=data.get('gardien', False),
-            portail_auto=data.get('portail_auto', False),
-            # Extérieur Maison
-            piscine=data.get('piscine', False),
-            potager=data.get('potager', False),
-            spa=data.get('spa', False),
-            terrain_tennis=data.get('terrain_tennis', False),
-            abri_jardin=data.get('abri_jardin', False),
-            arrosage_auto=data.get('arrosage_auto', False)
+            code_postal=validated['code_postal'],
+            surface=validated['surface'],
+            nb_pieces=validated['nb_pieces'],
+            type_bien=validated['type_bien'],
+            etage=validated['etage'],
+            nb_etages_immeuble=validated['nb_etages_immeuble'],
+            ascenseur=validated['ascenseur'],
+            balcon_terrasse=validated['balcon_terrasse'],
+            parking=validated['parking'],
+            cave=validated['cave'],
+            jardin=validated['jardin'],
+            veranda=validated['veranda'],
+            dependances=validated['dependances'],
+            surface_terrain=validated['surface_terrain'],
+            annee_construction=validated['annee_construction'],
+            etat_general=validated['etat_general'],
+            dpe=validated['dpe'],
+            exposition=validated['exposition'],
+            vue=validated['vue'],
+            standing=validated['standing'],
+            # Confort & Equipements
+            cuisine_equipee=validated['cuisine_equipee'],
+            double_vitrage=validated['double_vitrage'],
+            climatisation=validated['climatisation'],
+            cheminee=validated['cheminee'],
+            parquet=validated['parquet'],
+            fibre=validated['fibre'],
+            # Securite
+            alarme=validated['alarme'],
+            digicode=validated['digicode'],
+            gardien=validated['gardien'],
+            portail_auto=validated['portail_auto'],
+            # Exterieur Maison
+            piscine=validated['piscine'],
+            potager=validated['potager'],
+            spa=validated['spa'],
+            terrain_tennis=validated['terrain_tennis'],
+            abri_jardin=validated['abri_jardin'],
+            arrosage_auto=validated['arrosage_auto']
         )
 
         # Estimation
@@ -282,6 +329,7 @@ def api_estimate():
 
 
 @app.route('/api/stats/<code_postal>')
+@csrf.exempt
 def api_stats(code_postal):
     """
     Récupère les statistiques de prix pour un code postal.
@@ -305,6 +353,8 @@ def api_stats(code_postal):
 
 
 @app.route('/api/leads', methods=['POST'])
+@csrf.exempt
+@limiter.limit("10 per minute")  # Rate limit strict: 10 leads/minute max
 def api_leads():
     """
     API pour enregistrer les leads (demandes de rappel/visite).
@@ -314,45 +364,46 @@ def api_leads():
         data = request.get_json()
 
         if not data:
-            return jsonify({'erreur': True, 'message': 'Données manquantes'}), 400
+            return jsonify({'erreur': True, 'message': 'Donnees manquantes'}), 400
 
-        # Validation basique
-        if not data.get('telephone'):
-            return jsonify({'erreur': True, 'message': 'Téléphone requis'}), 400
+        # Validation securisee des donnees
+        validated, errors = validate_lead_data(data)
+        if errors:
+            return jsonify({'erreur': True, 'message': errors[0]}), 400
 
         # Parser la date si fournie
         date_souhaitee = None
-        if data.get('date_souhaitee'):
+        if validated.get('date_souhaitee'):
             try:
-                date_souhaitee = datetime.strptime(data['date_souhaitee'], '%Y-%m-%d').date()
+                date_souhaitee = datetime.strptime(validated['date_souhaitee'], '%Y-%m-%d').date()
             except ValueError:
                 pass
 
-        # Créer le lead
+        # Creer le lead avec donnees validees
         lead = Lead(
-            type=data.get('type', 'callback'),
-            nom=data.get('nom'),
-            prenom=data.get('prenom'),
-            telephone=data.get('telephone'),
-            email=data.get('email'),
-            adresse=data.get('adresse'),
+            type=validated['type'],
+            nom=validated['nom'],
+            prenom=validated['prenom'],
+            telephone=validated['telephone'],
+            email=validated['email'],
+            adresse=validated['adresse'],
             date_souhaitee=date_souhaitee,
-            creneau=data.get('creneau'),
-            horaires=data.get('horaires'),
-            projet=data.get('projet'),
-            message=data.get('message'),
-            estimation_data=data.get('estimation_data'),
+            creneau=validated['creneau'],
+            horaires=validated['horaires'],
+            projet=validated['projet'],
+            message=validated['message'],
+            estimation_data=validated['estimation_data'],
             status='nouveau'
         )
 
         db.session.add(lead)
         db.session.commit()
 
-        app.logger.info(f"Nouveau lead enregistré: {lead.type} - {lead.telephone} (ID: {lead.id})")
+        app.logger.info(f"Nouveau lead enregistre: {lead.type} - {lead.telephone} (ID: {lead.id})")
 
         return jsonify({
             'success': True,
-            'message': 'Demande enregistrée avec succès',
+            'message': 'Demande enregistree avec succes',
             'id': lead.id
         })
 
@@ -366,9 +417,11 @@ def api_leads():
 
 
 @app.route('/api/track', methods=['POST'])
+@csrf.exempt
+@limiter.limit("100 per minute")  # Rate limit: 100 events/minute max
 def api_track():
     """
-    API pour tracker l'activité des visiteurs.
+    API pour tracker l'activite des visiteurs.
     Enregistre les pageviews, clics, progression formulaire, etc.
     """
     try:
@@ -377,31 +430,31 @@ def api_track():
         if not data:
             return jsonify({'success': False}), 400
 
-        # Session ID requis
-        session_id = data.get('session_id')
-        if not session_id:
+        # Validation securisee des donnees
+        validated, error = validate_track_data(data)
+        if error:
             return jsonify({'success': False}), 400
 
-        # Créer l'activité
+        # Creer l'activite avec donnees validees
         activity = Activity(
-            session_id=session_id,
-            visitor_id=data.get('visitor_id'),
-            event_type=data.get('event_type', 'pageview'),
-            page_url=data.get('page_url'),
-            page_path=data.get('page_path'),
-            referrer=data.get('referrer'),
-            element_id=data.get('element_id'),
-            element_text=data.get('element_text', '')[:200] if data.get('element_text') else None,
-            element_class=data.get('element_class', '')[:200] if data.get('element_class') else None,
-            form_step=data.get('form_step'),
-            form_field=data.get('form_field'),
-            scroll_depth=data.get('scroll_depth'),
-            extra_data=data.get('extra_data'),
-            user_agent=request.headers.get('User-Agent', '')[:500],
-            screen_width=data.get('screen_width'),
-            screen_height=data.get('screen_height'),
+            session_id=validated['session_id'],
+            visitor_id=validated['visitor_id'],
+            event_type=validated['event_type'],
+            page_url=validated['page_url'],
+            page_path=validated['page_path'],
+            referrer=validated['referrer'],
+            element_id=validated['element_id'],
+            element_text=validated['element_text'],
+            element_class=validated['element_class'],
+            form_step=validated['form_step'],
+            form_field=validated['form_field'],
+            scroll_depth=validated['scroll_depth'],
+            extra_data=validated['extra_data'],
+            user_agent=sanitize_string(request.headers.get('User-Agent', ''), 500),
+            screen_width=validated['screen_width'],
+            screen_height=validated['screen_height'],
             ip_address=request.remote_addr,
-            time_on_page=data.get('time_on_page')
+            time_on_page=validated['time_on_page']
         )
 
         db.session.add(activity)
@@ -415,6 +468,8 @@ def api_track():
 
 
 @app.route('/api/consent', methods=['POST'])
+@csrf.exempt
+@limiter.limit("20 per minute")  # Rate limit: 20 consentements/minute max
 def api_consent():
     """
     API pour enregistrer le consentement RGPD.
@@ -426,18 +481,18 @@ def api_consent():
         if not data:
             return jsonify({'success': False}), 400
 
-        visitor_id = data.get('visitor_id')
+        visitor_id = sanitize_string(data.get('visitor_id'), 64)
         if not visitor_id:
             return jsonify({'success': False}), 400
 
         consent = Consent(
             visitor_id=visitor_id,
             ip_address=request.remote_addr,
-            consent_type=data.get('consent_type', 'cookies'),
-            consent_value=data.get('consent_value', False),
-            consent_text=data.get('consent_text'),
-            page_url=data.get('page_url'),
-            user_agent=request.headers.get('User-Agent', '')[:500]
+            consent_type=sanitize_string(data.get('consent_type', 'cookies'), 20),
+            consent_value=bool(data.get('consent_value', False)),
+            consent_text=sanitize_string(data.get('consent_text'), 1000),
+            page_url=sanitize_string(data.get('page_url'), 500),
+            user_agent=sanitize_string(request.headers.get('User-Agent', ''), 500)
         )
 
         db.session.add(consent)
@@ -451,6 +506,7 @@ def api_consent():
 
 
 @app.route('/api/health')
+@csrf.exempt
 def health():
     """Endpoint de vérification de santé."""
     try:

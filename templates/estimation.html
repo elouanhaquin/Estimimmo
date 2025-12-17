@@ -745,6 +745,16 @@
                     window.currentEstimationResult = result;
                     displayResults(result);
 
+                    // Track estimation shown
+                    if (window.EITracker && window.EITracker.track) {
+                        window.EITracker.track('estimation_shown', {
+                            estimation_moyenne: result.estimation_moyenne,
+                            code_postal: data.code_postal,
+                            type_bien: data.type_bien,
+                            surface: data.surface
+                        });
+                    }
+
                     // Show preview price (blurred)
                     const formatPrice = (price) => new Intl.NumberFormat('fr-FR', {
                         style: 'currency', currency: 'EUR', maximumFractionDigits: 0
@@ -849,14 +859,28 @@
         }
 
         function skipToEstimation() {
+            // Track skip
+            if (window.EITracker && window.EITracker.track) {
+                window.EITracker.track('estimation_skip');
+            }
             // Hide conversion section, show results
             document.getElementById('conversion-section').classList.add('hidden');
             document.querySelector('.results-card').classList.remove('hidden');
             document.querySelector('.results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Track estimation view
+            if (window.EITracker && window.EITracker.track) {
+                window.EITracker.track('estimation_view', {
+                    estimation_moyenne: window.currentEstimationResult?.estimation_moyenne
+                });
+            }
         }
 
         // Lead form functions
         function showCallbackForm() {
+            // Track callback click
+            if (window.EITracker && window.EITracker.track) {
+                window.EITracker.track('callback_click');
+            }
             document.querySelector('.estimation-ready-banner').classList.add('hidden');
             document.querySelector('.estimation-preview').classList.add('hidden');
             document.querySelector('.upsell-section').classList.add('hidden');
@@ -865,6 +889,10 @@
         }
 
         function showVisitForm() {
+            // Track visit click
+            if (window.EITracker && window.EITracker.track) {
+                window.EITracker.track('visit_click');
+            }
             document.querySelector('.estimation-ready-banner').classList.add('hidden');
             document.querySelector('.estimation-preview').classList.add('hidden');
             document.querySelector('.upsell-section').classList.add('hidden');
@@ -930,6 +958,11 @@
 
                 if (!response.ok) throw new Error('Erreur serveur');
 
+                // Track callback submit
+                if (window.EITracker && window.EITracker.track) {
+                    window.EITracker.track('callback_submit', { projet: data.projet });
+                }
+
                 // Show success
                 document.getElementById('callback-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');
@@ -941,6 +974,11 @@
                 const leads = JSON.parse(localStorage.getItem('estimoimmo_leads') || '[]');
                 leads.push(data);
                 localStorage.setItem('estimoimmo_leads', JSON.stringify(leads));
+
+                // Track callback submit (fallback)
+                if (window.EITracker && window.EITracker.track) {
+                    window.EITracker.track('callback_submit', { projet: data.projet, fallback: true });
+                }
 
                 document.getElementById('callback-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');
@@ -978,6 +1016,11 @@
 
                 if (!response.ok) throw new Error('Erreur serveur');
 
+                // Track visit submit
+                if (window.EITracker && window.EITracker.track) {
+                    window.EITracker.track('visit_submit');
+                }
+
                 // Show success
                 document.getElementById('visit-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');
@@ -989,6 +1032,11 @@
                 const leads = JSON.parse(localStorage.getItem('estimoimmo_leads') || '[]');
                 leads.push(data);
                 localStorage.setItem('estimoimmo_leads', JSON.stringify(leads));
+
+                // Track visit submit (fallback)
+                if (window.EITracker && window.EITracker.track) {
+                    window.EITracker.track('visit_submit', { fallback: true });
+                }
 
                 document.getElementById('visit-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');

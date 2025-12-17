@@ -14,6 +14,22 @@
         });
     }
 
+    // Envoyer des donnees JSON (avec sendBeacon ou XHR)
+    function sendData(url, data) {
+        var jsonStr = JSON.stringify(data);
+
+        if (navigator.sendBeacon) {
+            // Utiliser un Blob pour avoir le bon Content-Type
+            var blob = new Blob([jsonStr], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+        } else {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(jsonStr);
+        }
+    }
+
     // === GESTION DU CONSENTEMENT ===
 
     var CONSENT_KEY = 'ei_consent';
@@ -50,14 +66,7 @@
             page_url: window.location.href
         };
 
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon('/api/consent', JSON.stringify(data));
-        } else {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/consent', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify(data));
-        }
+        sendData('/api/consent', data);
     }
 
     // Creer la banniere cookies
@@ -129,21 +138,10 @@
         };
 
         if (extraData) {
-            for (var key in extraData) {
-                if (extraData.hasOwnProperty(key)) {
-                    data[key] = extraData[key];
-                }
-            }
+            data.extra_data = extraData;
         }
 
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon('/api/track', JSON.stringify(data));
-        } else {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/track', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify(data));
-        }
+        sendData('/api/track', data);
     }
 
     function initTracking() {
