@@ -2993,14 +2993,34 @@ footer {
     background: var(--gray-800);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .cookie-banner {
+        padding: 1rem;
+    }
+
     .cookie-content {
         flex-direction: column;
         text-align: center;
+        gap: 1rem;
+    }
+
+    .cookie-text {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .cookie-text p {
+        font-size: 0.85rem;
     }
 
     .cookie-buttons {
         width: 100%;
-        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .cookie-btn {
+        width: 100%;
+        padding: 0.875rem 1rem;
     }
 }
