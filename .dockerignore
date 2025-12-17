@@ -53,6 +53,17 @@ Dockerfile
 docker-compose*.yml
 .dockerignore
 
+# Scripts de deploiement
+setup.sh
+deploy.sh
+
+# Backups
+backups/
+
+# SSL (monte via volume)
+nginx/ssl/
+
 # Misc
 .DS_Store
 Thumbs.db
+nul

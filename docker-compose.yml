@@ -1,29 +1,63 @@
 version: '3.8'
 
 services:
+  # Application Flask (scalable)
   web:
     build: .
-    container_name: estimoimmo-web
     restart: unless-stopped
-    ports:
-      - "5000:5000"
     environment:
       - FLASK_ENV=production
       - SECRET_KEY=${SECRET_KEY}
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      - GUNICORN_WORKERS=4
     depends_on:
       db:
         condition: service_healthy
     networks:
       - estimoimmo-network
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: estimoimmo-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./static:/app/static:ro
+    depends_on:
+      - web
+    networks:
+      - estimoimmo-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
 
+  # PostgreSQL Database
   db:
     image: postgres:15-alpine
     container_name: estimoimmo-db
@@ -34,6 +68,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-estimoimmo}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
     networks:
       - estimoimmo-network
     healthcheck:
