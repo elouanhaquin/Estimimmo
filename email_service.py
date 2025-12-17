@@ -54,16 +54,30 @@ def send_email(subject, html_content, to_email=None):
         html_part = MIMEText(html_content, 'html', 'utf-8')
         msg.attach(html_part)
 
-        with smtplib.SMTP(config['server'], config['port']) as server:
+        print(f"Connexion SMTP {config['server']}:{config['port']}...")
+        with smtplib.SMTP(config['server'], config['port'], timeout=30) as server:
+            print("STARTTLS...")
             server.starttls()
+            print(f"Login {config['user']}...")
             server.login(config['user'], config['password'])
+            print("Envoi...")
             server.sendmail(config['user'], to_email, msg.as_string())
 
         logger.info(f"Email envoye: {subject}")
+        print("Email envoye!")
         return True
 
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error(f"Erreur authentification SMTP: {e}")
+        print(f"ERREUR AUTH: {e}")
+        return False
+    except smtplib.SMTPConnectError as e:
+        logger.error(f"Erreur connexion SMTP: {e}")
+        print(f"ERREUR CONNEXION: {e}")
+        return False
     except Exception as e:
         logger.error(f"Erreur envoi email: {e}")
+        print(f"ERREUR: {e}")
         return False
 
 
