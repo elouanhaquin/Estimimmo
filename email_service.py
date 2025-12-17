@@ -55,13 +55,22 @@ def send_email(subject, html_content, to_email=None):
         msg.attach(html_part)
 
         print(f"Connexion SMTP {config['server']}:{config['port']}...")
-        with smtplib.SMTP(config['server'], config['port'], timeout=30) as server:
-            print("STARTTLS...")
-            server.starttls()
-            print(f"Login {config['user']}...")
-            server.login(config['user'], config['password'])
-            print("Envoi...")
-            server.sendmail(config['user'], to_email, msg.as_string())
+
+        # Port 465 = SSL direct, Port 587 = STARTTLS
+        if config['port'] == 465:
+            with smtplib.SMTP_SSL(config['server'], config['port'], timeout=30) as server:
+                print(f"Login {config['user']}...")
+                server.login(config['user'], config['password'])
+                print("Envoi...")
+                server.sendmail(config['user'], to_email, msg.as_string())
+        else:
+            with smtplib.SMTP(config['server'], config['port'], timeout=30) as server:
+                print("STARTTLS...")
+                server.starttls()
+                print(f"Login {config['user']}...")
+                server.login(config['user'], config['password'])
+                print("Envoi...")
+                server.sendmail(config['user'], to_email, msg.as_string())
 
         logger.info(f"Email envoye: {subject}")
         print("Email envoye!")
