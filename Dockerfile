@@ -43,6 +43,9 @@ RUN pip install --no-cache /wheels/* && rm -rf /wheels
 # Copier le code source
 COPY --chown=appuser:appuser . .
 
+# Creer le dossier cache avec les bonnes permissions
+RUN mkdir -p /app/cache && chown appuser:appuser /app/cache
+
 # Changer vers utilisateur non-root
 USER appuser
 
