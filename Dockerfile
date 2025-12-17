@@ -1,5 +1,5 @@
 # ============================================
-# Dockerfile Production - EstimImmo
+# Dockerfile Production - ValoMaison
 # Multi-stage build optimise
 # ============================================
 

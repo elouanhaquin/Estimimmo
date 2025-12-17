@@ -1,5 +1,5 @@
 """
-Module de securite - EstimImmo
+Module de securite - ValoMaison
 Protection CSRF, Rate Limiting, Validation des inputs
 """
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
-    <title>Estimation immobilière gratuite | EstimImmo</title>
+    <title>Estimation immobilière gratuite | ValoMaison</title>
     <meta name="description" content="Estimez gratuitement la valeur de votre bien immobilier en 2 minutes. Basé sur les transactions réelles DVF.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ request.url_root }}estimation">
@@ -13,7 +13,7 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url_root }}estimation">
-    <meta property="og:title" content="Estimation immobilière gratuite | EstimImmo">
+    <meta property="og:title" content="Estimation immobilière gratuite | ValoMaison">
     <meta property="og:description" content="Estimez gratuitement la valeur de votre bien immobilier en 2 minutes.">
     <meta property="og:locale" content="fr_FR">
 
@@ -32,7 +32,7 @@
         <nav class="navbar">
             <a href="/" class="nav-logo">
                 <span class="logo-icon">🏠</span>
-                <span class="logo-text">EstimImmo</span>
+                <span class="logo-text">ValoMaison</span>
             </a>
             <div class="nav-links">
                 <a href="/" class="nav-link">Accueil</a>
@@ -532,7 +532,7 @@
                             </div>
                             <label class="consent-checkbox">
                                 <input type="checkbox" name="consent" required>
-                                <span>J'accepte d'être recontacté par EstimImmo. <a href="/politique-confidentialite" target="_blank">Politique de confidentialité</a></span>
+                                <span>J'accepte d'être recontacté par ValoMaison. <a href="/politique-confidentialite" target="_blank">Politique de confidentialité</a></span>
                             </label>
                             <button type="submit" class="btn-primary btn-full">Demander un rappel</button>
                         </form>
@@ -588,7 +588,7 @@
                             </div>
                             <label class="consent-checkbox">
                                 <input type="checkbox" name="consent" required>
-                                <span>J'accepte d'être recontacté par EstimImmo. <a href="/politique-confidentialite" target="_blank">Politique de confidentialité</a></span>
+                                <span>J'accepte d'être recontacté par ValoMaison. <a href="/politique-confidentialite" target="_blank">Politique de confidentialité</a></span>
                             </label>
                             <button type="submit" class="btn-primary btn-full">Planifier la visite</button>
                         </form>
@@ -629,7 +629,7 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <span class="logo-icon">🏠</span>
-                    <span class="logo-text">EstimImmo</span>
+                    <span class="logo-text">ValoMaison</span>
                 </div>
                 <div class="footer-links">
                     <a href="/">Accueil</a>
@@ -971,9 +971,9 @@
 
             } catch (err) {
                 // Fallback: store locally
-                const leads = JSON.parse(localStorage.getItem('estimoimmo_leads') || '[]');
+                const leads = JSON.parse(localStorage.getItem('valomaison_leads') || '[]');
                 leads.push(data);
-                localStorage.setItem('estimoimmo_leads', JSON.stringify(leads));
+                localStorage.setItem('valomaison_leads', JSON.stringify(leads));
 
                 // Track callback submit (fallback)
                 if (window.EITracker && window.EITracker.track) {
@@ -1029,9 +1029,9 @@
 
             } catch (err) {
                 // Fallback: store locally
-                const leads = JSON.parse(localStorage.getItem('estimoimmo_leads') || '[]');
+                const leads = JSON.parse(localStorage.getItem('valomaison_leads') || '[]');
                 leads.push(data);
-                localStorage.setItem('estimoimmo_leads', JSON.stringify(leads));
+                localStorage.setItem('valomaison_leads', JSON.stringify(leads));
 
                 // Track visit submit (fallback)
                 if (window.EITracker && window.EITracker.track) {

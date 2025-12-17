@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # Script de configuration SSL - Let's Encrypt
-# Pour EstimImmo
+# Pour ValoMaison
 # ============================================
 
 set -e
@@ -20,7 +20,7 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-DOMAIN=${DOMAIN:-"estimoimmo.fr"}
+DOMAIN=${DOMAIN:-"valomaison.fr"}
 EMAIL=${SSL_EMAIL:-"admin@$DOMAIN"}
 
 show_help() {
@@ -34,7 +34,7 @@ show_help() {
     echo "  help        Afficher cette aide"
     echo ""
     echo "Variables (.env):"
-    echo "  DOMAIN      Nom de domaine (default: estimoimmo.fr)"
+    echo "  DOMAIN      Nom de domaine (default: valomaison.fr)"
     echo "  SSL_EMAIL   Email pour Let's Encrypt"
 }
 

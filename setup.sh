@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Script d'installation initiale EstimImmo
+# Script d'installation initiale ValoMaison
 # Pour VPS Ubuntu/Debian
 # ============================================
 
@@ -21,7 +21,7 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-log_info "=== Installation EstimImmo ==="
+log_info "=== Installation ValoMaison ==="
 
 # 1. Mise a jour du systeme
 log_info "Mise a jour du systeme..."
@@ -83,7 +83,7 @@ if ! id "deploy" &>/dev/null; then
 fi
 
 # 8. Creer le repertoire de l'application
-APP_DIR="/opt/estimoimmo"
+APP_DIR="/opt/valomaison"
 log_info "Creation du repertoire $APP_DIR..."
 mkdir -p $APP_DIR
 chown deploy:deploy $APP_DIR
@@ -98,7 +98,7 @@ echo "1. Connectez-vous en tant que 'deploy':"
 echo "   su - deploy"
 echo ""
 echo "2. Clonez le repository:"
-echo "   cd /opt/estimoimmo"
+echo "   cd /opt/valomaison"
 echo "   git clone git@github.com:elouanhaquin/Estimimmo.git ."
 echo ""
 echo "3. Configurez l'environnement:"
@@ -111,7 +111,7 @@ echo "   ./deploy.sh deploy"
 echo ""
 echo "5. (Optionnel) Configurez SSL avec Let's Encrypt:"
 echo "   apt install certbot"
-echo "   certbot certonly --standalone -d estimoimmo.fr"
+echo "   certbot certonly --standalone -d valomaison.fr"
 echo "   # Puis copiez les certificats dans nginx/ssl/"
 echo ""
 log_info "Bonne installation!"

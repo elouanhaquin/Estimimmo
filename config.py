@@ -1,5 +1,5 @@
 """
-Configuration de l'application - EstimImmo
+Configuration de l'application - ValoMaison
 """
 
 import os
@@ -19,7 +19,7 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'sqlite:///estimoimmo.db'  # SQLite par défaut pour le développement
+        'sqlite:///valomaison.db'  # SQLite par défaut pour le développement
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {

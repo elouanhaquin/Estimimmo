@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================
-# Script de deploiement EstimImmo
+# Script de deploiement ValoMaison
 # Zero-downtime deployment avec rolling update
 # ============================================
 
@@ -54,7 +54,7 @@ backup_database() {
     BACKUP_FILE="backups/backup_$(date +%Y%m%d_%H%M%S).sql"
 
     if docker-compose ps db | grep -q "Up"; then
-        docker-compose exec -T db pg_dump -U ${POSTGRES_USER:-estimoimmo} ${POSTGRES_DB:-estimoimmo} > "$BACKUP_FILE"
+        docker-compose exec -T db pg_dump -U ${POSTGRES_USER:-valomaison} ${POSTGRES_DB:-valomaison} > "$BACKUP_FILE"
 
         if [ -f "$BACKUP_FILE" ]; then
             gzip "$BACKUP_FILE"

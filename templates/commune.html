@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
-    <title>Prix immobilier {{ commune.nom }} ({{ commune.code_postal }}) : {{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€/m² | EstimImmo</title>
+    <title>Prix immobilier {{ commune.nom }} ({{ commune.code_postal }}) : {{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€/m² | ValoMaison</title>
     <meta name="description" content="Prix au m² à {{ commune.nom }}: appartement {{ "%.0f"|format(commune.prix_m2_appartement or 0) }}€{% if commune.evolution_appartement %} ({{ "%+.1f"|format(commune.evolution_appartement) }}%){% endif %}, maison {{ "%.0f"|format(commune.prix_m2_maison or 0) }}€. {{ commune.nb_transactions_12m or 0 }} ventes en 2024. Estimation gratuite.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ request.url_root }}prix-immobilier/{{ commune.slug }}">
@@ -72,7 +72,7 @@
         <nav class="navbar">
             <a href="/" class="nav-logo">
                 <span class="logo-icon">🏠</span>
-                <span class="logo-text">EstimImmo</span>
+                <span class="logo-text">ValoMaison</span>
             </a>
             <div class="nav-links">
                 <a href="/" class="nav-link">Accueil</a>
@@ -314,7 +314,7 @@
             <div class="footer-content">
                 <div class="footer-brand">
                     <span class="logo-icon">🏠</span>
-                    <span class="logo-text">EstimImmo</span>
+                    <span class="logo-text">ValoMaison</span>
                 </div>
                 <div class="footer-links">
                     <a href="/">Accueil</a>

@@ -1,5 +1,5 @@
 """
-Modèles de base de données - EstimImmo
+Modèles de base de données - ValoMaison
 """
 
 import re

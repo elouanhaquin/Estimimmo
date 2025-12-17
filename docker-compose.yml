@@ -11,7 +11,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      - estimoimmo-network
+      - valomaison-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
       interval: 10s
@@ -36,7 +36,7 @@ services:
   # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
-    container_name: estimoimmo-nginx
+    container_name: valomaison-nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -48,7 +48,7 @@ services:
     depends_on:
       - web
     networks:
-      - estimoimmo-network
+      - valomaison-network
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
@@ -58,25 +58,25 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:15-alpine
-    container_name: estimoimmo-db
+    container_name: valomaison-db
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-estimoimmo}
+      - POSTGRES_USER=${POSTGRES_USER:-valomaison}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB:-estimoimmo}
+      - POSTGRES_DB=${POSTGRES_DB:-valomaison}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups
     networks:
-      - estimoimmo-network
+      - valomaison-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-estimoimmo} -d ${POSTGRES_DB:-estimoimmo}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-valomaison} -d ${POSTGRES_DB:-valomaison}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 networks:
-  estimoimmo-network:
+  valomaison-network:
     driver: bridge
 
 volumes:

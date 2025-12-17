@@ -1,5 +1,5 @@
 """
-Configuration Gunicorn pour la production - EstimImmo
+Configuration Gunicorn pour la production - ValoMaison
 """
 
 import multiprocessing
