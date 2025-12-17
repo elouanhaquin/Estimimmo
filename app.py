@@ -18,6 +18,7 @@ from security import (
     validate_estimation_data, validate_lead_data, validate_track_data,
     sanitize_string, validate_code_postal
 )
+from email_service import send_lead_alert
 
 app = Flask(__name__)
 app.config.from_object(get_config())
@@ -412,6 +413,12 @@ def api_leads():
         db.session.commit()
 
         app.logger.info(f"Nouveau lead enregistre: {lead.type} - {lead.telephone} (ID: {lead.id})")
+
+        # Envoyer alerte email (async-safe, ne bloque pas la reponse)
+        try:
+            send_lead_alert(lead)
+        except Exception as e:
+            app.logger.warning(f"Erreur envoi alerte lead: {e}")
 
         return jsonify({
             'success': True,
