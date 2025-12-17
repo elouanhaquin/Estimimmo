@@ -35,23 +35,31 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Headers de securite (desactive en dev pour faciliter le debug)
+# Headers de securite
+# Note: HTTPS est gere par Nginx, pas par Flask
+csp = {
+    'default-src': "'self'",
+    'script-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
+    'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com",
+    'font-src': "'self' https://fonts.gstatic.com",
+    'img-src': "'self' data:",
+    'connect-src': "'self'",
+}
+
 if os.getenv('FLASK_ENV') == 'production':
-    # CSP strict en production
-    csp = {
-        'default-src': "'self'",
-        'script-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
-        'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com",
-        'font-src': "'self' https://fonts.gstatic.com",
-        'img-src': "'self' data:",
-        'connect-src': "'self'",
-    }
-    Talisman(app, content_security_policy=csp, force_https=True)
-else:
-    # Headers basiques en dev (pas de HTTPS force)
     Talisman(
         app,
-        content_security_policy=None,  # Desactive CSP en dev
+        content_security_policy=csp,
+        force_https=False,  # Nginx gere HTTPS, pas Flask
+        session_cookie_secure=True,
+        session_cookie_http_only=True,
+        strict_transport_security=True,
+        strict_transport_security_max_age=31536000
+    )
+else:
+    Talisman(
+        app,
+        content_security_policy=None,
         force_https=False,
         session_cookie_secure=False,
         session_cookie_http_only=True
