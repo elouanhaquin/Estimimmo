@@ -25,14 +25,14 @@ from email_service import send_daily_report
 
 def calculate_daily_stats():
     """
-    Calcule les statistiques du jour precedent.
+    Calcule les statistiques des dernieres 24 heures.
 
     Returns:
         dict: Statistiques du jour
     """
-    # Periode: hier 00:00 -> aujourd'hui 00:00
-    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    yesterday = today - timedelta(days=1)
+    # Periode: dernières 24h
+    now = datetime.now()
+    yesterday = now - timedelta(hours=24)
 
     with app.app_context():
         # Visiteurs uniques (visitor_id distinct)
@@ -40,7 +40,7 @@ def calculate_daily_stats():
             func.count(distinct(Activity.visitor_id))
         ).filter(
             Activity.timestamp >= yesterday,
-            Activity.timestamp < today
+            Activity.timestamp <= now
         ).scalar() or 0
 
         # Pages vues
@@ -48,7 +48,7 @@ def calculate_daily_stats():
             func.count(Activity.id)
         ).filter(
             Activity.timestamp >= yesterday,
-            Activity.timestamp < today,
+            Activity.timestamp <= now,
             Activity.event_type == 'pageview'
         ).scalar() or 0
 
@@ -57,7 +57,7 @@ def calculate_daily_stats():
             func.avg(Activity.time_on_page)
         ).filter(
             Activity.timestamp >= yesterday,
-            Activity.timestamp < today,
+            Activity.timestamp <= now,
             Activity.time_on_page.isnot(None),
             Activity.time_on_page > 0
         ).scalar() or 0
@@ -67,7 +67,7 @@ def calculate_daily_stats():
             func.count(Activity.id)
         ).filter(
             Activity.timestamp >= yesterday,
-            Activity.timestamp < today,
+            Activity.timestamp <= now,
             Activity.event_type == 'form_submit'
         ).scalar() or 0
 
@@ -76,7 +76,7 @@ def calculate_daily_stats():
             func.count(Lead.id)
         ).filter(
             Lead.created_at >= yesterday,
-            Lead.created_at < today
+            Lead.created_at <= now
         ).scalar() or 0
 
         # Top pages
@@ -85,7 +85,7 @@ def calculate_daily_stats():
             func.count(Activity.id).label('views')
         ).filter(
             Activity.timestamp >= yesterday,
-            Activity.timestamp < today,
+            Activity.timestamp <= now,
             Activity.event_type == 'pageview'
         ).group_by(
             Activity.page_path

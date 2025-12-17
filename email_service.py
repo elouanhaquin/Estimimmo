@@ -172,8 +172,8 @@ def send_daily_report(stats):
             - leads: nombre de leads
             - top_pages: liste des pages les plus visitees
     """
-    yesterday = (datetime.now() - timedelta(days=1)).strftime('%d/%m/%Y')
-    subject = f"[ValoMaison] Rapport du {yesterday}"
+    today = datetime.now().strftime('%d/%m/%Y %H:%M')
+    subject = f"[ValoMaison] Rapport - {today}"
 
     # Formater le temps moyen
     avg_time_min = stats.get('avg_time', 0) // 60
@@ -209,8 +209,8 @@ def send_daily_report(stats):
     <body>
         <div class="container">
             <div class="header">
-                <h1>Rapport Quotidien</h1>
-                <p>{yesterday}</p>
+                <h1>Rapport 24h</h1>
+                <p>{today}</p>
             </div>
             <div class="content">
                 <div class="stats-grid">
