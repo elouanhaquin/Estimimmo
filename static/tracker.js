@@ -6,6 +6,18 @@
 (function() {
     'use strict';
 
+    // === MOBILE MENU TOGGLE ===
+    var navToggle = document.querySelector('.nav-toggle');
+    if (navToggle) {
+        navToggle.addEventListener('click', function() {
+            var navLinks = document.querySelector('.nav-links');
+            if (navLinks) {
+                navLinks.classList.toggle('active');
+                this.textContent = this.textContent === '☰' ? '✕' : '☰';
+            }
+        });
+    }
+
     // === UTILITAIRES ===
 
     function generateId() {
