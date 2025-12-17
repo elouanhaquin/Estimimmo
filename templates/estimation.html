@@ -964,11 +964,18 @@
                     window.EITracker.track('callback_submit', { projet: data.projet });
                 }
 
-                // Show success
+                // Show success then estimation
                 document.getElementById('callback-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');
                 document.getElementById('success-message').textContent =
                     'Un conseiller vous rappellera sur le ' + data.telephone;
+
+                // Show estimation after delay
+                setTimeout(function() {
+                    document.getElementById('conversion-section').classList.add('hidden');
+                    document.querySelector('.results-card').classList.remove('hidden');
+                    document.querySelector('.results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 2000);
 
             } catch (err) {
                 // Fallback: store locally
@@ -985,6 +992,13 @@
                 document.getElementById('lead-success').classList.remove('hidden');
                 document.getElementById('success-message').textContent =
                     'Demande enregistrée ! Un conseiller vous rappellera bientôt.';
+
+                // Show estimation after delay
+                setTimeout(function() {
+                    document.getElementById('conversion-section').classList.add('hidden');
+                    document.querySelector('.results-card').classList.remove('hidden');
+                    document.querySelector('.results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 2000);
             }
         });
 
@@ -1022,11 +1036,18 @@
                     window.EITracker.track('visit_submit');
                 }
 
-                // Show success
+                // Show success then estimation
                 document.getElementById('visit-form-container').classList.add('hidden');
                 document.getElementById('lead-success').classList.remove('hidden');
                 document.getElementById('success-message').textContent =
                     'Visite programmée ! Vous recevrez une confirmation par email à ' + data.email;
+
+                // Show estimation after delay
+                setTimeout(function() {
+                    document.getElementById('conversion-section').classList.add('hidden');
+                    document.querySelector('.results-card').classList.remove('hidden');
+                    document.querySelector('.results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 2000);
 
             } catch (err) {
                 // Fallback: store locally
@@ -1043,6 +1064,13 @@
                 document.getElementById('lead-success').classList.remove('hidden');
                 document.getElementById('success-message').textContent =
                     'Demande de visite enregistrée ! Un conseiller vous contactera pour confirmer.';
+
+                // Show estimation after delay
+                setTimeout(function() {
+                    document.getElementById('conversion-section').classList.add('hidden');
+                    document.querySelector('.results-card').classList.remove('hidden');
+                    document.querySelector('.results-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 2000);
             }
         });
     </script>
