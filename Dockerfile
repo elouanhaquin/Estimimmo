@@ -46,6 +46,9 @@ COPY --chown=appuser:appuser . .
 # Creer le dossier cache avec les bonnes permissions
 RUN mkdir -p /app/cache && chown appuser:appuser /app/cache
 
+# Rendre le script entrypoint executable
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Changer vers utilisateur non-root
 USER appuser
 
@@ -53,8 +56,8 @@ USER appuser
 EXPOSE 5000
 
 # Healthcheck avec curl (plus fiable)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:5000/api/health || exit 1
 
-# Commande de demarrage
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "app:app"]
+# Commande de demarrage via entrypoint
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
