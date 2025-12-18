@@ -145,6 +145,14 @@ def prix_immobilier_index():
     return render_template('prix-immobilier-index.html', departements=departements)
 
 
+@app.route('/prix-immobilier/departement/<code>')
+def departement_page(code):
+    """Page de prix immobilier pour un département."""
+    departement = Departement.query.get_or_404(code)
+    communes = Commune.query.filter_by(departement_code=code).order_by(Commune.nom).all()
+    return render_template('departement.html', departement=departement, communes=communes)
+
+
 @app.route('/prix-immobilier/<slug>')
 def commune_page(slug):
     """Page de prix immobilier pour une commune spécifique."""

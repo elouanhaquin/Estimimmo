@@ -60,7 +60,7 @@
 
                 <div class="dept-grid">
                     {% for dept in departements %}
-                    <a href="/prix-immobilier?dept={{ dept.code }}" class="dept-card">
+                    <a href="/prix-immobilier/departement/{{ dept.code }}" class="dept-card">
                         <div class="dept-code">{{ dept.code }}</div>
                         <div class="dept-name">{{ dept.nom }}</div>
                         {% if dept.prix_m2_appartement %}

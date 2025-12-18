@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Prix immobilier {{ departement.nom }} ({{ departement.code }}) - Prix m2 | ValoMaison</title>
+    <meta name="description" content="Prix immobilier dans le {{ departement.nom }} ({{ departement.code }}). Consultez les prix au m2 de toutes les communes du departement. Donnees DVF officielles.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}prix-immobilier/departement/{{ departement.code }}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}prix-immobilier/departement/{{ departement.code }}">
+    <meta property="og:title" content="Prix immobilier {{ departement.nom }} ({{ departement.code }})">
+    <meta property="og:description" content="Consultez les prix au m2 dans toutes les communes du {{ departement.nom }}.">
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .search-box {
+            margin-bottom: 2rem;
+        }
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .communes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .commune-card {
+            display: block;
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        .commune-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        .commune-card.hidden {
+            display: none;
+        }
+        .commune-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        .commune-cp {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        .commune-price {
+            font-size: 0.9rem;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+        .dept-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .dept-stat-card {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+        .dept-stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .dept-stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+        .results-count {
+            color: #64748b;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏠</span>
+                <span class="logo-text">ValoMaison</span>
+            </a>
+            <button class="nav-toggle" aria-label="Menu">☰</button>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="/estimation" class="nav-link">Estimer</a>
+                <a href="/a-propos" class="nav-link">A propos</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+        </nav>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/">Accueil</a> &rsaquo;
+            <a href="/prix-immobilier">Prix immobilier</a> &rsaquo;
+            <span>{{ departement.nom }}</span>
+        </div>
+
+        <!-- Header -->
+        <header class="page-header page-header-large">
+            <h1>Prix immobilier {{ departement.nom }} ({{ departement.code }})</h1>
+            <p>{{ communes|length }} communes dans le departement</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="content-page">
+            <div class="content-container">
+
+                <!-- Stats departement -->
+                {% if departement.prix_m2_appartement or departement.prix_m2_maison %}
+                <div class="dept-stats">
+                    {% if departement.prix_m2_appartement %}
+                    <div class="dept-stat-card">
+                        <div class="dept-stat-value">{{ "%.0f"|format(departement.prix_m2_appartement) }} €/m²</div>
+                        <div class="dept-stat-label">Prix moyen appartement</div>
+                    </div>
+                    {% endif %}
+                    {% if departement.prix_m2_maison %}
+                    <div class="dept-stat-card">
+                        <div class="dept-stat-value">{{ "%.0f"|format(departement.prix_m2_maison) }} €/m²</div>
+                        <div class="dept-stat-label">Prix moyen maison</div>
+                    </div>
+                    {% endif %}
+                    {% if departement.nb_transactions_12m %}
+                    <div class="dept-stat-card">
+                        <div class="dept-stat-value">{{ "{:,}".format(departement.nb_transactions_12m).replace(",", " ") }}</div>
+                        <div class="dept-stat-label">Transactions (12 mois)</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Search -->
+                <section class="content-section">
+                    <h2>Rechercher une commune</h2>
+                    <div class="search-box">
+                        <input type="text" id="search-commune" class="search-input" placeholder="Nom de la commune ou code postal..." autocomplete="off">
+                    </div>
+                    <p class="results-count"><span id="results-count">{{ communes|length }}</span> communes</p>
+                </section>
+
+                <!-- Liste des communes -->
+                <div class="communes-grid" id="communes-list">
+                    {% for commune in communes %}
+                    <a href="/prix-immobilier/{{ commune.slug }}" class="commune-card" data-nom="{{ commune.nom|lower }}" data-cp="{{ commune.code_postal }}">
+                        <div class="commune-name">{{ commune.nom }}</div>
+                        <div class="commune-cp">{{ commune.code_postal }}</div>
+                        {% if commune.prix_m2_appartement or commune.prix_m2_maison %}
+                        <div class="commune-price">
+                            {% if commune.prix_m2_appartement %}Appart: {{ "%.0f"|format(commune.prix_m2_appartement) }} €/m²{% endif %}
+                            {% if commune.prix_m2_appartement and commune.prix_m2_maison %} | {% endif %}
+                            {% if commune.prix_m2_maison %}Maison: {{ "%.0f"|format(commune.prix_m2_maison) }} €/m²{% endif %}
+                        </div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <div class="no-results" id="no-results" style="display: none;">
+                    Aucune commune trouvee pour cette recherche.
+                </div>
+
+                <!-- Back link -->
+                <section class="content-section" style="margin-top: 3rem;">
+                    <a href="/prix-immobilier" class="btn-secondary">Retour aux departements</a>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🏠</span>
+                    <span class="logo-text">ValoMaison</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Accueil</a>
+                    <a href="/estimation">Estimer</a>
+                    <a href="/a-propos">A propos</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-legal-links">
+                    <a href="/mentions-legales">Mentions legales</a>
+                    <a href="/cgu">CGU</a>
+                    <a href="/politique-confidentialite">Confidentialite</a>
+                </div>
+                <p class="footer-legal">Donnees DVF - data.gouv.fr</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Recherche de communes
+        const searchInput = document.getElementById('search-commune');
+        const communesList = document.getElementById('communes-list');
+        const communeCards = communesList.querySelectorAll('.commune-card');
+        const resultsCount = document.getElementById('results-count');
+        const noResults = document.getElementById('no-results');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            communeCards.forEach(card => {
+                const nom = card.dataset.nom;
+                const cp = card.dataset.cp;
+                const match = nom.includes(query) || cp.includes(query);
+
+                if (match) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            resultsCount.textContent = visibleCount;
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        });
+    </script>
+    <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
+</body>
+</html>

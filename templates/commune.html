@@ -90,7 +90,7 @@
             <a href="/prix-immobilier">Prix immobilier</a>
             <span class="separator">/</span>
             {% if commune.departement %}
-            <a href="/prix-immobilier?dept={{ commune.departement_code }}">{{ commune.departement.nom }}</a>
+            <a href="/prix-immobilier/departement/{{ commune.departement_code }}">{{ commune.departement.nom }}</a>
             <span class="separator">/</span>
             {% endif %}
             <span class="current">{{ commune.nom }}</span>
