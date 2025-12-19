@@ -1244,7 +1244,7 @@
                 email: formData.get('email') || null,
                 horaires: formData.get('horaires'),
                 projet: formData.get('projet'),
-                estimation: getCurrentEstimation(),
+                estimation_data: getCurrentEstimation(),
                 date_demande: new Date().toISOString()
             };
 
@@ -1323,7 +1323,7 @@
                 date_souhaitee: formData.get('date'),
                 creneau: formData.get('creneau'),
                 message: formData.get('message') || null,
-                estimation: getCurrentEstimation(),
+                estimation_data: getCurrentEstimation(),
                 date_demande: new Date().toISOString()
             };
 
