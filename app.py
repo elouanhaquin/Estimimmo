@@ -395,6 +395,7 @@ def api_leads():
         # Validation securisee des donnees
         validated, errors = validate_lead_data(data)
         if errors:
+            app.logger.warning(f"Validation lead echouee: {errors} | Data: {data}")
             return jsonify({'erreur': True, 'message': errors[0]}), 400
 
         # Parser la date si fournie
