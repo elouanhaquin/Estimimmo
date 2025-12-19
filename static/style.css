@@ -3048,14 +3048,14 @@ footer {
     background: var(--success);
 }
 
-/* Form Steps */
-.form-step {
-    display: none;
-    animation: fadeInStep 0.4s ease-out;
+/* Form Steps - Hidden by default, shown when active */
+.multistep-form .form-step {
+    display: none !important;
 }
 
-.form-step.active {
-    display: block;
+.multistep-form .form-step.active {
+    display: block !important;
+    animation: fadeInStep 0.4s ease-out;
 }
 
 @keyframes fadeInStep {
