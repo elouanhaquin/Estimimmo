@@ -134,6 +134,33 @@
 
     var sessionId, visitorId, pageStartTime, maxScrollDepth, lastFormStep, lastFormField;
 
+    // Tracking anonyme (sans consentement) - IP tronquée côté serveur
+    function trackAnonymous(eventType, extraData) {
+        var data = {
+            event_type: eventType,
+            page_path: window.location.pathname,
+            timestamp: new Date().toISOString(),
+            consent: hasConsent() ? 'full' : 'anonymous'
+        };
+
+        if (extraData) {
+            data.extra_data = extraData;
+        }
+
+        // Toujours envoyer, le serveur gère l'anonymisation
+        sendData('/api/track-step', data);
+    }
+
+    // Tracking des étapes du formulaire (fonctionne sans consentement)
+    function trackFormStep(step, stepName, formData) {
+        console.log('[Tracker] Step ' + step + ': ' + stepName);
+        trackAnonymous('form_step', {
+            step: step,
+            step_name: stepName,
+            form_data: formData || {}
+        });
+    }
+
     function track(eventType, extraData) {
         if (!hasConsent()) return;
 
@@ -264,6 +291,8 @@
     // Exposer pour usage manuel
     window.EITracker = {
         track: track,
+        trackFormStep: trackFormStep,
+        trackAnonymous: trackAnonymous,
         hasConsent: hasConsent,
         getConsent: getConsent
     };

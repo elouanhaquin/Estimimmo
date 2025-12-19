@@ -719,6 +719,15 @@
 
         log('Formulaire multi-step initialisé');
 
+        // Tracker l'étape initiale au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.EITracker && window.EITracker.trackFormStep) {
+                    window.EITracker.trackFormStep(1, 'Type & Localisation (start)', {});
+                }
+            }, 500);
+        });
+
         function updateStepper() {
             document.querySelectorAll('.stepper-step').forEach((step, index) => {
                 const stepNum = index + 1;
@@ -741,6 +750,13 @@
             log(`Stepper mis à jour - Étape ${currentStep}/${totalSteps}`);
         }
 
+        const stepNames = {
+            1: 'Type & Localisation',
+            2: 'Caractéristiques',
+            3: 'État du bien',
+            4: 'Équipements'
+        };
+
         function showStep(step) {
             document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
             const targetStep = document.querySelector(`.form-step[data-step="${step}"]`);
@@ -749,6 +765,13 @@
                 log(`Affichage étape ${step}`);
             }
             updateStepper();
+
+            // Tracker l'étape (fonctionne même sans consentement cookies)
+            if (window.EITracker && window.EITracker.trackFormStep) {
+                const stepData = collectStepData(step);
+                window.EITracker.trackFormStep(step, stepNames[step] || 'unknown', stepData);
+            }
+
             // Scroll to top of form
             document.querySelector('.form-stepper').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -985,6 +1008,11 @@
                     log('Erreur API:', result.message);
                     document.getElementById('error-text').textContent = result.message;
                     error.classList.remove('hidden');
+
+                    // Tracker l'erreur
+                    if (window.EITracker && window.EITracker.trackFormStep) {
+                        window.EITracker.trackFormStep(5, 'Erreur estimation', { error: result.message });
+                    }
                 } else {
                     log('Estimation réussie', {
                         estimation_basse: result.estimation_basse,
@@ -992,6 +1020,16 @@
                         estimation_haute: result.estimation_haute,
                         confiance: result.confiance
                     });
+
+                    // Tracker le succès
+                    if (window.EITracker && window.EITracker.trackFormStep) {
+                        window.EITracker.trackFormStep(5, 'Estimation terminée', {
+                            code_postal: data.code_postal,
+                            type_bien: data.type_bien,
+                            surface: data.surface,
+                            confiance: result.confiance
+                        });
+                    }
                     // Store result and show conversion section first
                     window.currentEstimationResult = result;
                     displayResults(result);

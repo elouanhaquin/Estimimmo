@@ -499,6 +499,58 @@ def api_track():
         return jsonify({'success': False}), 500
 
 
+@app.route('/api/track-step', methods=['POST'])
+@csrf.exempt
+@limiter.limit("200 per minute")
+def api_track_step():
+    """
+    API pour tracker l'avancement du formulaire.
+    Fonctionne même sans consentement cookies (IP tronquée).
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False}), 400
+
+        # Récupérer l'IP
+        ip = request.remote_addr or ''
+        consent_level = data.get('consent', 'anonymous')
+
+        # Tronquer l'IP si pas de consentement complet
+        if consent_level != 'full':
+            # IPv4: garder seulement les 2 premiers octets (ex: 192.168.x.x -> 192.168.0.0)
+            # IPv6: garder seulement le préfixe /48
+            if ':' in ip:
+                # IPv6
+                parts = ip.split(':')
+                ip_truncated = ':'.join(parts[:3]) + '::' if len(parts) >= 3 else 'unknown'
+            else:
+                # IPv4
+                parts = ip.split('.')
+                ip_truncated = '.'.join(parts[:2]) + '.0.0' if len(parts) >= 2 else 'unknown'
+        else:
+            ip_truncated = ip
+
+        # Extraire les données
+        event_type = sanitize_string(data.get('event_type', ''), 50)
+        page_path = sanitize_string(data.get('page_path', ''), 200)
+        extra_data = data.get('extra_data', {})
+
+        # Log dans la console serveur
+        step_info = extra_data.get('step', '?')
+        step_name = extra_data.get('step_name', 'unknown')
+        app.logger.info(f"[FormStep] Step {step_info} ({step_name}) | IP: {ip_truncated} | Consent: {consent_level} | Path: {page_path}")
+
+        # Stocker en base (optionnel - créer un modèle FormProgress si besoin)
+        # Pour l'instant on log juste côté serveur
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        app.logger.error(f"[FormStep] Error: {str(e)}")
+        return jsonify({'success': False}), 500
+
+
 @app.route('/api/consent', methods=['POST'])
 @csrf.exempt
 @limiter.limit("20 per minute")  # Rate limit: 20 consentements/minute max
