@@ -7,6 +7,7 @@ import os
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory, Response, abort
 from flask_migrate import Migrate
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -22,6 +23,10 @@ from email_service import send_lead_alert
 
 app = Flask(__name__)
 app.config.from_object(get_config())
+
+# ProxyFix pour respecter les headers X-Forwarded-* de Nginx
+# Permet d'avoir les bonnes URLs (https) dans request.url_root
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 # === SECURITE ===
 
