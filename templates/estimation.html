@@ -46,274 +46,171 @@
         <!-- Page Header -->
         <header class="page-header">
             <h1>Estimez votre bien immobilier</h1>
-            <p>Remplissez le formulaire ci-dessous pour obtenir une estimation basée sur les transactions réelles</p>
+            <p>Obtenez une estimation basée sur les transactions réelles en quelques clics</p>
         </header>
 
         <!-- Main Form -->
         <main class="main-content">
-            <form id="estimation-form" class="estimation-form">
+            <form id="estimation-form" class="estimation-form multistep-form">
+                <!-- Progress Stepper -->
+                <div class="form-stepper">
+                    <div class="stepper-step active" data-step="1">
+                        <span class="stepper-number">1</span>
+                        <span class="stepper-label">Bien</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" data-step="2">
+                        <span class="stepper-number">2</span>
+                        <span class="stepper-label">Surface</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" data-step="3">
+                        <span class="stepper-number">3</span>
+                        <span class="stepper-label">État</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" data-step="4">
+                        <span class="stepper-number">4</span>
+                        <span class="stepper-label">Options</span>
+                    </div>
+                </div>
+
                 <!-- Step 1: Type & Location -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="step-number">1</span>
-                        <div>
-                            <h2>Votre bien</h2>
-                            <p>Type et localisation</p>
+                <div class="form-step active" data-step="1">
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="step-number">1</span>
+                            <div>
+                                <h2>Votre bien</h2>
+                                <p>Type et localisation</p>
+                            </div>
+                        </div>
+
+                        <div class="type-selector">
+                            <label class="type-option selected" data-type="appartement">
+                                <input type="radio" name="type_bien" value="appartement" checked>
+                                <span class="type-icon">🏢</span>
+                                <span class="type-label">Appartement</span>
+                            </label>
+                            <label class="type-option" data-type="maison">
+                                <input type="radio" name="type_bien" value="maison">
+                                <span class="type-icon">🏡</span>
+                                <span class="type-label">Maison</span>
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="code_postal">Code postal</label>
+                            <input type="text" id="code_postal" name="code_postal"
+                                   placeholder="Ex: 75001" pattern="[0-9]{5}" maxlength="5" required>
                         </div>
                     </div>
 
-                    <div class="type-selector">
-                        <label class="type-option selected" data-type="appartement">
-                            <input type="radio" name="type_bien" value="appartement" checked>
-                            <span class="type-icon">🏢</span>
-                            <span class="type-label">Appartement</span>
-                        </label>
-                        <label class="type-option" data-type="maison">
-                            <input type="radio" name="type_bien" value="maison">
-                            <span class="type-icon">🏡</span>
-                            <span class="type-label">Maison</span>
-                        </label>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="code_postal">Code postal</label>
-                        <input type="text" id="code_postal" name="code_postal"
-                               placeholder="Ex: 75001" pattern="[0-9]{5}" maxlength="5" required>
+                    <div class="step-navigation">
+                        <div></div>
+                        <button type="button" class="nav-btn nav-btn-next" onclick="nextStep()">
+                            Suivant <span>→</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Step 2: Surface & Rooms -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="step-number">2</span>
-                        <div>
-                            <h2>Caractéristiques</h2>
-                            <p>Surface et pièces</p>
+                <div class="form-step" data-step="2">
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="step-number">2</span>
+                            <div>
+                                <h2>Caractéristiques</h2>
+                                <p>Surface et pièces</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label for="surface">Surface (m²)</label>
-                            <input type="number" id="surface" name="surface"
-                                   placeholder="Ex: 65" min="9" max="1000" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="nb_pieces">Pièces</label>
-                            <input type="number" id="nb_pieces" name="nb_pieces"
-                                   placeholder="Ex: 3" min="1" max="20" required>
-                        </div>
-                    </div>
-
-                    <!-- Appartement specific -->
-                    <div id="appart-fields" class="conditional-fields">
                         <div class="input-row">
                             <div class="input-group">
-                                <label for="etage">Etage</label>
-                                <input type="number" id="etage" name="etage"
-                                       placeholder="Ex: 3" min="0" max="50">
+                                <label for="surface">Surface (m²)</label>
+                                <input type="number" id="surface" name="surface"
+                                       placeholder="Ex: 65" min="9" max="1000" required>
                             </div>
                             <div class="input-group">
-                                <label for="nb_etages_immeuble">Etages immeuble</label>
-                                <input type="number" id="nb_etages_immeuble" name="nb_etages_immeuble"
-                                       placeholder="Ex: 5" min="1" max="50">
+                                <label for="nb_pieces">Pièces</label>
+                                <input type="number" id="nb_pieces" name="nb_pieces"
+                                       placeholder="Ex: 3" min="1" max="20" required>
+                            </div>
+                        </div>
+
+                        <!-- Appartement specific -->
+                        <div id="appart-fields" class="conditional-fields">
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="etage">Étage</label>
+                                    <input type="number" id="etage" name="etage"
+                                           placeholder="Ex: 3" min="0" max="50">
+                                </div>
+                                <div class="input-group">
+                                    <label for="nb_etages_immeuble">Étages immeuble</label>
+                                    <input type="number" id="nb_etages_immeuble" name="nb_etages_immeuble"
+                                           placeholder="Ex: 5" min="1" max="50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maison specific -->
+                        <div id="maison-fields" class="conditional-fields hidden">
+                            <div class="input-group">
+                                <label for="surface_terrain">Surface terrain (m²)</label>
+                                <input type="number" id="surface_terrain" name="surface_terrain"
+                                       placeholder="Ex: 500" min="0" max="100000">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Maison specific -->
-                    <div id="maison-fields" class="conditional-fields hidden">
-                        <div class="input-group">
-                            <label for="surface_terrain">Surface terrain (m²)</label>
-                            <input type="number" id="surface_terrain" name="surface_terrain"
-                                   placeholder="Ex: 500" min="0" max="100000">
-                        </div>
+                    <div class="step-navigation">
+                        <button type="button" class="nav-btn nav-btn-prev" onclick="prevStep()">
+                            <span>←</span> Précédent
+                        </button>
+                        <button type="button" class="nav-btn nav-btn-next" onclick="nextStep()">
+                            Suivant <span>→</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Step 3: State & Equipment -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="step-number">3</span>
-                        <div>
-                            <h2>État & Équipements</h2>
-                            <p>Affinez votre estimation</p>
+                <!-- Step 3: State -->
+                <div class="form-step" data-step="3">
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="step-number">3</span>
+                            <div>
+                                <h2>État du bien</h2>
+                                <p>Affinez votre estimation</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label for="etat_general">Etat general</label>
-                            <select id="etat_general" name="etat_general">
-                                <option value="a_renover">A renover</option>
-                                <option value="correct">Correct</option>
-                                <option value="bon" selected>Bon etat</option>
-                                <option value="tres_bon">Tres bon etat</option>
-                                <option value="neuf">Neuf / Refait a neuf</option>
-                            </select>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="etat_general">État général</label>
+                                <select id="etat_general" name="etat_general">
+                                    <option value="a_renover">À rénover</option>
+                                    <option value="correct">Correct</option>
+                                    <option value="bon" selected>Bon état</option>
+                                    <option value="tres_bon">Très bon état</option>
+                                    <option value="neuf">Neuf / Refait à neuf</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="dpe">DPE</label>
+                                <select id="dpe" name="dpe">
+                                    <option value="">Non renseigné</option>
+                                    <option value="A">A - Excellent</option>
+                                    <option value="B">B - Très bon</option>
+                                    <option value="C">C - Bon</option>
+                                    <option value="D">D - Moyen</option>
+                                    <option value="E">E - Passable</option>
+                                    <option value="F">F - Mauvais</option>
+                                    <option value="G">G - Très mauvais</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <label for="dpe">DPE</label>
-                            <select id="dpe" name="dpe">
-                                <option value="">Non renseigne</option>
-                                <option value="A">A - Excellent</option>
-                                <option value="B">B - Tres bon</option>
-                                <option value="C">C - Bon</option>
-                                <option value="D">D - Moyen</option>
-                                <option value="E">E - Passable</option>
-                                <option value="F">F - Mauvais</option>
-                                <option value="G">G - Tres mauvais</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <p class="checkbox-section-title">Espaces & Rangements</p>
-                    <div class="checkbox-grid">
-                        <label class="checkbox-card" id="ascenseur-option">
-                            <input type="checkbox" name="ascenseur" value="true">
-                            <span class="checkbox-icon">🛗</span>
-                            <span class="checkbox-label">Ascenseur</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="balcon_terrasse" value="true">
-                            <span class="checkbox-icon">🌅</span>
-                            <span class="checkbox-label">Balcon/Terrasse</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="parking" value="true">
-                            <span class="checkbox-icon">🚗</span>
-                            <span class="checkbox-label">Parking</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="cave" value="true">
-                            <span class="checkbox-icon">📦</span>
-                            <span class="checkbox-label">Cave</span>
-                        </label>
-                        <label class="checkbox-card" id="jardin-option">
-                            <input type="checkbox" name="jardin" value="true">
-                            <span class="checkbox-icon">🌿</span>
-                            <span class="checkbox-label">Jardin</span>
-                        </label>
-                        <label class="checkbox-card" id="veranda-option" style="display: none;">
-                            <input type="checkbox" name="veranda" value="true">
-                            <span class="checkbox-icon">🏠</span>
-                            <span class="checkbox-label">Véranda</span>
-                        </label>
-                        <label class="checkbox-card" id="dependances-option" style="display: none;">
-                            <input type="checkbox" name="dependances" value="true">
-                            <span class="checkbox-icon">🏚️</span>
-                            <span class="checkbox-label">Dépendances</span>
-                        </label>
-                    </div>
-
-                    <p class="checkbox-section-title">Confort & Équipements</p>
-                    <div class="checkbox-grid">
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="cuisine_equipee" value="true">
-                            <span class="checkbox-icon">🍳</span>
-                            <span class="checkbox-label">Cuisine équipée</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="double_vitrage" value="true">
-                            <span class="checkbox-icon">🪟</span>
-                            <span class="checkbox-label">Double vitrage</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="climatisation" value="true">
-                            <span class="checkbox-icon">❄️</span>
-                            <span class="checkbox-label">Climatisation</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="cheminee" value="true">
-                            <span class="checkbox-icon">🔥</span>
-                            <span class="checkbox-label">Cheminée</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="parquet" value="true">
-                            <span class="checkbox-icon">🪵</span>
-                            <span class="checkbox-label">Parquet</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="fibre" value="true">
-                            <span class="checkbox-icon">📡</span>
-                            <span class="checkbox-label">Fibre optique</span>
-                        </label>
-                    </div>
-
-                    <p class="checkbox-section-title">Sécurité</p>
-                    <div class="checkbox-grid">
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="alarme" value="true">
-                            <span class="checkbox-icon">🚨</span>
-                            <span class="checkbox-label">Alarme</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="digicode" value="true">
-                            <span class="checkbox-icon">🔐</span>
-                            <span class="checkbox-label">Digicode</span>
-                        </label>
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="gardien" value="true">
-                            <span class="checkbox-icon">👮</span>
-                            <span class="checkbox-label">Gardien</span>
-                        </label>
-                        <label class="checkbox-card" id="portail-option" style="display: none;">
-                            <input type="checkbox" name="portail_auto" value="true">
-                            <span class="checkbox-icon">🚧</span>
-                            <span class="checkbox-label">Portail auto</span>
-                        </label>
-                    </div>
-
-                    <!-- Maison premium features -->
-                    <div id="maison-premium" class="hidden">
-                        <p class="checkbox-section-title">Extérieur & Loisirs</p>
-                        <div class="checkbox-grid">
-                            <label class="checkbox-card">
-                                <input type="checkbox" name="piscine" value="true">
-                                <span class="checkbox-icon">🏊</span>
-                                <span class="checkbox-label">Piscine</span>
-                            </label>
-                            <label class="checkbox-card">
-                                <input type="checkbox" name="potager" value="true">
-                                <span class="checkbox-icon">🥕</span>
-                                <span class="checkbox-label">Potager</span>
-                            </label>
-                            <label class="checkbox-card">
-                                <input type="checkbox" name="spa" value="true">
-                                <span class="checkbox-icon">🛁</span>
-                                <span class="checkbox-label">Spa/Jacuzzi</span>
-                            </label>
-                            <label class="checkbox-card">
-                                <input type="checkbox" name="terrain_tennis" value="true">
-                                <span class="checkbox-icon">🎾</span>
-                                <span class="checkbox-label">Tennis</span>
-                            </label>
-                            <label class="checkbox-card">
-                                <input type="checkbox" name="abri_jardin" value="true">
-                                <span class="checkbox-icon">🏡</span>
-                                <span class="checkbox-label">Abri de jardin</span>
-                            </label>
-                            <label class="checkbox-card">
-                                <input type="checkbox" name="arrosage_auto" value="true">
-                                <span class="checkbox-icon">💧</span>
-                                <span class="checkbox-label">Arrosage auto</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 4: Advanced (collapsible) -->
-                <details class="form-card advanced-section">
-                    <summary class="card-header clickable">
-                        <span class="step-number">+</span>
-                        <div>
-                            <h2>Options avancées</h2>
-                            <p>Affiner encore plus (optionnel)</p>
-                        </div>
-                        <span class="expand-icon">▼</span>
-                    </summary>
-
-                    <div class="advanced-content">
                         <div class="input-row">
                             <div class="input-group">
                                 <label for="exposition">Exposition</label>
@@ -334,24 +231,181 @@
                                     <option value="exceptionnelle">Exceptionnelle</option>
                                 </select>
                             </div>
-                            <div class="input-group">
-                                <label for="standing">Standing</label>
-                                <select id="standing" name="standing">
-                                    <option value="economique">Économique</option>
-                                    <option value="standard" selected>Standard</option>
-                                    <option value="standing">Standing</option>
-                                    <option value="luxe">Luxe</option>
-                                </select>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button type="button" class="nav-btn nav-btn-prev" onclick="prevStep()">
+                            <span>←</span> Précédent
+                        </button>
+                        <button type="button" class="nav-btn nav-btn-next" onclick="nextStep()">
+                            Suivant <span>→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Equipment & Options -->
+                <div class="form-step" data-step="4">
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="step-number">4</span>
+                            <div>
+                                <h2>Équipements</h2>
+                                <p>Optionnel - Sélectionnez ce qui s'applique</p>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="standing">Standing</label>
+                            <select id="standing" name="standing">
+                                <option value="economique">Économique</option>
+                                <option value="standard" selected>Standard</option>
+                                <option value="standing">Standing</option>
+                                <option value="luxe">Luxe</option>
+                            </select>
+                        </div>
+
+                        <p class="checkbox-section-title">Espaces & Rangements</p>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-card" id="ascenseur-option">
+                                <input type="checkbox" name="ascenseur" value="true">
+                                <span class="checkbox-icon">🛗</span>
+                                <span class="checkbox-label">Ascenseur</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="balcon_terrasse" value="true">
+                                <span class="checkbox-icon">🌅</span>
+                                <span class="checkbox-label">Balcon/Terrasse</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="parking" value="true">
+                                <span class="checkbox-icon">🚗</span>
+                                <span class="checkbox-label">Parking</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="cave" value="true">
+                                <span class="checkbox-icon">📦</span>
+                                <span class="checkbox-label">Cave</span>
+                            </label>
+                            <label class="checkbox-card" id="jardin-option">
+                                <input type="checkbox" name="jardin" value="true">
+                                <span class="checkbox-icon">🌿</span>
+                                <span class="checkbox-label">Jardin</span>
+                            </label>
+                            <label class="checkbox-card" id="veranda-option" style="display: none;">
+                                <input type="checkbox" name="veranda" value="true">
+                                <span class="checkbox-icon">🏠</span>
+                                <span class="checkbox-label">Véranda</span>
+                            </label>
+                            <label class="checkbox-card" id="dependances-option" style="display: none;">
+                                <input type="checkbox" name="dependances" value="true">
+                                <span class="checkbox-icon">🏚️</span>
+                                <span class="checkbox-label">Dépendances</span>
+                            </label>
+                        </div>
+
+                        <p class="checkbox-section-title">Confort & Sécurité</p>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="cuisine_equipee" value="true">
+                                <span class="checkbox-icon">🍳</span>
+                                <span class="checkbox-label">Cuisine équipée</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="double_vitrage" value="true">
+                                <span class="checkbox-icon">🪟</span>
+                                <span class="checkbox-label">Double vitrage</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="climatisation" value="true">
+                                <span class="checkbox-icon">❄️</span>
+                                <span class="checkbox-label">Climatisation</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="cheminee" value="true">
+                                <span class="checkbox-icon">🔥</span>
+                                <span class="checkbox-label">Cheminée</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="parquet" value="true">
+                                <span class="checkbox-icon">🪵</span>
+                                <span class="checkbox-label">Parquet</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="fibre" value="true">
+                                <span class="checkbox-icon">📡</span>
+                                <span class="checkbox-label">Fibre optique</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="alarme" value="true">
+                                <span class="checkbox-icon">🚨</span>
+                                <span class="checkbox-label">Alarme</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="digicode" value="true">
+                                <span class="checkbox-icon">🔐</span>
+                                <span class="checkbox-label">Digicode</span>
+                            </label>
+                            <label class="checkbox-card">
+                                <input type="checkbox" name="gardien" value="true">
+                                <span class="checkbox-icon">👮</span>
+                                <span class="checkbox-label">Gardien</span>
+                            </label>
+                            <label class="checkbox-card" id="portail-option" style="display: none;">
+                                <input type="checkbox" name="portail_auto" value="true">
+                                <span class="checkbox-icon">🚧</span>
+                                <span class="checkbox-label">Portail auto</span>
+                            </label>
+                        </div>
+
+                        <!-- Maison premium features -->
+                        <div id="maison-premium" class="hidden">
+                            <p class="checkbox-section-title">Extérieur & Loisirs</p>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="piscine" value="true">
+                                    <span class="checkbox-icon">🏊</span>
+                                    <span class="checkbox-label">Piscine</span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="potager" value="true">
+                                    <span class="checkbox-icon">🥕</span>
+                                    <span class="checkbox-label">Potager</span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="spa" value="true">
+                                    <span class="checkbox-icon">🛁</span>
+                                    <span class="checkbox-label">Spa/Jacuzzi</span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="terrain_tennis" value="true">
+                                    <span class="checkbox-icon">🎾</span>
+                                    <span class="checkbox-label">Tennis</span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="abri_jardin" value="true">
+                                    <span class="checkbox-icon">🏡</span>
+                                    <span class="checkbox-label">Abri de jardin</span>
+                                </label>
+                                <label class="checkbox-card">
+                                    <input type="checkbox" name="arrosage_auto" value="true">
+                                    <span class="checkbox-icon">💧</span>
+                                    <span class="checkbox-label">Arrosage auto</span>
+                                </label>
                             </div>
                         </div>
                     </div>
-                </details>
 
-                <!-- Submit -->
-                <button type="submit" class="submit-btn">
-                    <span class="btn-text">Estimer mon bien</span>
-                    <span class="btn-icon">→</span>
-                </button>
+                    <div class="step-navigation">
+                        <button type="button" class="nav-btn nav-btn-prev" onclick="prevStep()">
+                            <span>←</span> Précédent
+                        </button>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-text">Estimer mon bien</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+                    </div>
+                </div>
             </form>
 
             <!-- Results Section -->
@@ -649,6 +703,180 @@
     </div>
 
     <script>
+        // Multi-step form navigation
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Logging helper
+        function log(message, data = null) {
+            const timestamp = new Date().toISOString().substr(11, 12);
+            if (data) {
+                console.log(`[${timestamp}] [Estimation] ${message}`, data);
+            } else {
+                console.log(`[${timestamp}] [Estimation] ${message}`);
+            }
+        }
+
+        log('Formulaire multi-step initialisé');
+
+        function updateStepper() {
+            document.querySelectorAll('.stepper-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                step.classList.remove('active', 'completed');
+                if (stepNum === currentStep) {
+                    step.classList.add('active');
+                } else if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+
+            // Update stepper lines
+            document.querySelectorAll('.stepper-line').forEach((line, index) => {
+                if (index < currentStep - 1) {
+                    line.classList.add('completed');
+                } else {
+                    line.classList.remove('completed');
+                }
+            });
+            log(`Stepper mis à jour - Étape ${currentStep}/${totalSteps}`);
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            const targetStep = document.querySelector(`.form-step[data-step="${step}"]`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                log(`Affichage étape ${step}`);
+            }
+            updateStepper();
+            // Scroll to top of form
+            document.querySelector('.form-stepper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function getStepValidationRules(step) {
+            const rules = {
+                1: [
+                    { id: 'code_postal', name: 'Code postal', required: true, pattern: /^[0-9]{5}$/, message: 'Le code postal doit contenir 5 chiffres' }
+                ],
+                2: [
+                    { id: 'surface', name: 'Surface', required: true, min: 9, max: 1000, message: 'La surface doit être entre 9 et 1000 m²' },
+                    { id: 'nb_pieces', name: 'Nombre de pièces', required: true, min: 1, max: 20, message: 'Le nombre de pièces doit être entre 1 et 20' }
+                ],
+                3: [], // Pas de champs obligatoires
+                4: []  // Pas de champs obligatoires
+            };
+            return rules[step] || [];
+        }
+
+        function validateStep(step) {
+            log(`Validation étape ${step}...`);
+            const rules = getStepValidationRules(step);
+            let isValid = true;
+            let errors = [];
+
+            // Remove previous error messages
+            document.querySelectorAll('.field-error').forEach(el => el.remove());
+
+            rules.forEach(rule => {
+                const input = document.getElementById(rule.id);
+                if (!input) return;
+
+                const value = input.value.trim();
+                let fieldValid = true;
+                let errorMessage = '';
+
+                // Check required
+                if (rule.required && !value) {
+                    fieldValid = false;
+                    errorMessage = `${rule.name} est obligatoire`;
+                }
+                // Check pattern
+                else if (rule.pattern && value && !rule.pattern.test(value)) {
+                    fieldValid = false;
+                    errorMessage = rule.message;
+                }
+                // Check min/max for numbers
+                else if ((rule.min !== undefined || rule.max !== undefined) && value) {
+                    const numValue = parseFloat(value);
+                    if (rule.min !== undefined && numValue < rule.min) {
+                        fieldValid = false;
+                        errorMessage = rule.message;
+                    }
+                    if (rule.max !== undefined && numValue > rule.max) {
+                        fieldValid = false;
+                        errorMessage = rule.message;
+                    }
+                }
+
+                if (!fieldValid) {
+                    isValid = false;
+                    errors.push({ field: rule.id, message: errorMessage });
+                    input.classList.add('invalid');
+
+                    // Add error message below input
+                    const errorEl = document.createElement('span');
+                    errorEl.className = 'field-error';
+                    errorEl.textContent = errorMessage;
+                    input.parentNode.appendChild(errorEl);
+
+                    log(`Erreur validation: ${rule.id}`, errorMessage);
+                } else {
+                    input.classList.remove('invalid');
+                }
+            });
+
+            if (isValid) {
+                // Log validated data
+                const stepData = collectStepData(step);
+                log(`Étape ${step} validée`, stepData);
+            } else {
+                log(`Étape ${step} - Erreurs de validation`, errors);
+                // Focus first invalid field
+                const firstError = errors[0];
+                if (firstError) {
+                    document.getElementById(firstError.field)?.focus();
+                }
+            }
+
+            return isValid;
+        }
+
+        function collectStepData(step) {
+            const stepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+            const data = {};
+
+            stepElement.querySelectorAll('input, select').forEach(input => {
+                if (input.type === 'radio') {
+                    if (input.checked) data[input.name] = input.value;
+                } else if (input.type === 'checkbox') {
+                    if (input.checked) data[input.name] = true;
+                } else if (input.value) {
+                    data[input.name] = input.value;
+                }
+            });
+
+            return data;
+        }
+
+        function nextStep() {
+            log(`Tentative passage étape ${currentStep} -> ${currentStep + 1}`);
+            if (currentStep < totalSteps) {
+                if (validateStep(currentStep)) {
+                    currentStep++;
+                    showStep(currentStep);
+                    log(`Navigation vers étape ${currentStep} réussie`);
+                }
+            }
+        }
+
+        function prevStep() {
+            log(`Retour étape ${currentStep} -> ${currentStep - 1}`);
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
         // Type selector
         document.querySelectorAll('.type-option').forEach(option => {
             option.addEventListener('click', function() {
@@ -674,6 +902,17 @@
         // Form submission
         document.getElementById('estimation-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            log('Soumission du formulaire...');
+
+            // Validate all steps before submission
+            for (let i = 1; i <= totalSteps; i++) {
+                if (!validateStep(i)) {
+                    log(`Validation échouée à l'étape ${i}`);
+                    currentStep = i;
+                    showStep(i);
+                    return;
+                }
+            }
 
             const loading = document.getElementById('loading');
             const results = document.getElementById('results');
@@ -689,6 +928,8 @@
             formData.forEach((value, key) => {
                 if (value !== '') data[key] = value;
             });
+
+            log('Données du formulaire collectées', data);
 
             // Type conversions
             if (data.surface) data.surface = parseFloat(data.surface);
@@ -729,6 +970,7 @@
             data.arrosage_auto = data.arrosage_auto === 'true';
 
             try {
+                log('Envoi requête API /api/estimate');
                 const response = await fetch('/api/estimate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -737,11 +979,19 @@
 
                 const result = await response.json();
                 loading.classList.add('hidden');
+                log('Réponse API reçue', result);
 
                 if (result.erreur) {
+                    log('Erreur API:', result.message);
                     document.getElementById('error-text').textContent = result.message;
                     error.classList.remove('hidden');
                 } else {
+                    log('Estimation réussie', {
+                        estimation_basse: result.estimation_basse,
+                        estimation_moyenne: result.estimation_moyenne,
+                        estimation_haute: result.estimation_haute,
+                        confiance: result.confiance
+                    });
                     // Store result and show conversion section first
                     window.currentEstimationResult = result;
                     displayResults(result);
@@ -769,6 +1019,7 @@
                     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (err) {
+                log('Erreur réseau:', err.message);
                 loading.classList.add('hidden');
                 document.getElementById('error-text').textContent = 'Erreur de connexion au serveur.';
                 error.classList.remove('hidden');
@@ -856,6 +1107,15 @@
             document.getElementById('skip-conversion-btn').classList.remove('hidden');
             document.getElementById('estimation-form').reset();
             resetLeadForms();
+            // Reset multi-step form to step 1
+            currentStep = 1;
+            showStep(1);
+            // Reset type selector to appartement
+            document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
+            document.querySelector('.type-option[data-type="appartement"]').classList.add('selected');
+            document.getElementById('appart-fields').classList.remove('hidden');
+            document.getElementById('maison-fields').classList.add('hidden');
+            document.getElementById('maison-premium').classList.add('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
