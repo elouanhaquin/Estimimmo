@@ -1233,6 +1233,7 @@
         // Callback form submission
         document.getElementById('callback-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            log('Soumission formulaire callback...');
 
             const formData = new FormData(this);
             const data = {
@@ -1247,15 +1248,21 @@
                 date_demande: new Date().toISOString()
             };
 
+            log('Données lead callback:', data);
+
             try {
                 // Send to backend API
+                log('Envoi vers /api/leads...');
                 const response = await fetch('/api/leads', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                if (!response.ok) throw new Error('Erreur serveur');
+                const result = await response.json();
+                log('Réponse /api/leads:', result);
+
+                if (!response.ok) throw new Error(result.message || 'Erreur serveur');
 
                 // Track callback submit
                 if (window.EITracker && window.EITracker.track) {
@@ -1303,6 +1310,7 @@
         // Visit form submission
         document.getElementById('visit-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            log('Soumission formulaire visite...');
 
             const formData = new FormData(this);
             const data = {
@@ -1319,15 +1327,21 @@
                 date_demande: new Date().toISOString()
             };
 
+            log('Données lead visite:', data);
+
             try {
                 // Send to backend API
+                log('Envoi vers /api/leads...');
                 const response = await fetch('/api/leads', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
-                if (!response.ok) throw new Error('Erreur serveur');
+                const result = await response.json();
+                log('Réponse /api/leads:', result);
+
+                if (!response.ok) throw new Error(result.message || 'Erreur serveur');
 
                 // Track visit submit
                 if (window.EITracker && window.EITracker.track) {
