@@ -1166,12 +1166,13 @@
 
                         if (leadNom && leadEmail && leadTelephone && leadNom.value && leadEmail.value) {
                             const leadData = {
-                                type: 'estimation',
+                                type: 'callback',
                                 nom: leadNom.value,
                                 prenom: '',
                                 telephone: leadTelephone.value,
                                 email: leadEmail.value,
-                                projet: selectedTimeline,
+                                projet: 'vente',
+                                notes: `Délai de vente: ${selectedTimeline}`,
                                 estimation_data: {
                                     code_postal: data.code_postal,
                                     type_bien: data.type_bien,
