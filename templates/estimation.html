@@ -52,36 +52,21 @@
         <!-- Main Form -->
         <main class="main-content">
             <form id="estimation-form" class="estimation-form multistep-form">
-                <!-- Progress Stepper -->
+                <!-- Progress Stepper (affiche 3 étapes visuellement) -->
                 <div class="form-stepper">
-                    <div class="stepper-step active" data-step="1">
+                    <div class="stepper-step active" data-visual-step="1">
                         <span class="stepper-number">1</span>
-                        <span class="stepper-label">Bien</span>
+                        <span class="stepper-label">Localisation</span>
                     </div>
                     <div class="stepper-line"></div>
-                    <div class="stepper-step" data-step="2">
+                    <div class="stepper-step" data-visual-step="2">
                         <span class="stepper-number">2</span>
-                        <span class="stepper-label">Surface</span>
+                        <span class="stepper-label">Caractéristiques</span>
                     </div>
                     <div class="stepper-line"></div>
-                    <div class="stepper-step" data-step="3">
+                    <div class="stepper-step" data-visual-step="3">
                         <span class="stepper-number">3</span>
-                        <span class="stepper-label">État</span>
-                    </div>
-                    <div class="stepper-line"></div>
-                    <div class="stepper-step" data-step="4">
-                        <span class="stepper-number">4</span>
-                        <span class="stepper-label">Options</span>
-                    </div>
-                    <div class="stepper-line"></div>
-                    <div class="stepper-step" data-step="5">
-                        <span class="stepper-number">5</span>
                         <span class="stepper-label">Projet</span>
-                    </div>
-                    <div class="stepper-line" id="stepper-line-6"></div>
-                    <div class="stepper-step" data-step="6" id="stepper-step-6">
-                        <span class="stepper-number">6</span>
-                        <span class="stepper-label">Contact</span>
                     </div>
                 </div>
 
@@ -838,25 +823,32 @@
         });
 
         function updateStepper() {
+            // Mapper les 6 étapes internes vers 3 étapes visuelles
+            // Étapes 1-2 → Visual 1, Étapes 3-4 → Visual 2, Étapes 5-6 → Visual 3
+            let visualStep;
+            if (currentStep <= 2) visualStep = 1;
+            else if (currentStep <= 4) visualStep = 2;
+            else visualStep = 3;
+
             document.querySelectorAll('.stepper-step').forEach((step, index) => {
                 const stepNum = index + 1;
                 step.classList.remove('active', 'completed');
-                if (stepNum === currentStep) {
+                if (stepNum === visualStep) {
                     step.classList.add('active');
-                } else if (stepNum < currentStep) {
+                } else if (stepNum < visualStep) {
                     step.classList.add('completed');
                 }
             });
 
             // Update stepper lines
             document.querySelectorAll('.stepper-line').forEach((line, index) => {
-                if (index < currentStep - 1) {
+                if (index < visualStep - 1) {
                     line.classList.add('completed');
                 } else {
                     line.classList.remove('completed');
                 }
             });
-            log(`Stepper mis à jour - Étape ${currentStep}/${totalSteps}`);
+            log(`Stepper mis à jour - Étape interne ${currentStep}/${totalSteps}, visuelle ${visualStep}/3`);
         }
 
         const stepNames = {
