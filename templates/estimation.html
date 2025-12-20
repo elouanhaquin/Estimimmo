@@ -70,50 +70,64 @@
                     </div>
                 </div>
 
-                <!-- Step 1: Type & Location -->
+                <!-- Step 1: Type de bien (auto-advance) -->
                 <div class="form-step active" data-step="1">
                     <div class="form-card">
                         <div class="card-header">
                             <span class="step-number">1</span>
                             <div>
-                                <h2>Votre bien</h2>
-                                <p>Type et localisation</p>
+                                <h2>Quel type de bien ?</h2>
+                                <p>Sélectionnez votre type de bien</p>
                             </div>
                         </div>
 
-                        <div class="type-selector">
-                            <label class="type-option selected" data-type="appartement">
-                                <input type="radio" name="type_bien" value="appartement" checked>
+                        <div class="type-selector type-selector-large">
+                            <label class="type-option type-option-large" data-type="appartement">
+                                <input type="radio" name="type_bien" value="appartement">
                                 <span class="type-icon">🏢</span>
                                 <span class="type-label">Appartement</span>
                             </label>
-                            <label class="type-option" data-type="maison">
+                            <label class="type-option type-option-large" data-type="maison">
                                 <input type="radio" name="type_bien" value="maison">
                                 <span class="type-icon">🏡</span>
                                 <span class="type-label">Maison</span>
                             </label>
                         </div>
-
-                        <div class="input-group">
-                            <label for="code_postal">Code postal</label>
-                            <input type="text" id="code_postal" name="code_postal"
-                                   placeholder="Ex: 75001" pattern="[0-9]{5}" maxlength="5" required>
-                        </div>
-                    </div>
-
-                    <div class="step-navigation">
-                        <div></div>
-                        <button type="button" class="nav-btn nav-btn-next" onclick="nextStep()">
-                            Suivant <span>→</span>
-                        </button>
                     </div>
                 </div>
 
-                <!-- Step 2: Surface & Rooms -->
+                <!-- Step 2: Code postal (auto-advance when valid) -->
                 <div class="form-step" data-step="2">
                     <div class="form-card">
                         <div class="card-header">
                             <span class="step-number">2</span>
+                            <div>
+                                <h2>Où se situe votre bien ?</h2>
+                                <p>Entrez votre code postal</p>
+                            </div>
+                        </div>
+
+                        <div class="input-group input-group-large">
+                            <label for="code_postal">Code postal</label>
+                            <input type="text" id="code_postal" name="code_postal"
+                                   placeholder="Ex: 75001" pattern="[0-9]{5}" maxlength="5" required
+                                   inputmode="numeric" autocomplete="postal-code" class="input-large">
+                        </div>
+
+                        <div class="step-navigation">
+                            <button type="button" class="nav-btn nav-btn-prev" onclick="prevStep()">
+                                <span>←</span> Précédent
+                            </button>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Surface & Rooms -->
+                <div class="form-step" data-step="3">
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="step-number">3</span>
                             <div>
                                 <h2>Caractéristiques</h2>
                                 <p>Surface et pièces</p>
@@ -169,11 +183,11 @@
                     </div>
                 </div>
 
-                <!-- Step 3: State -->
-                <div class="form-step" data-step="3">
+                <!-- Step 4: State -->
+                <div class="form-step" data-step="4">
                     <div class="form-card">
                         <div class="card-header">
-                            <span class="step-number">3</span>
+                            <span class="step-number">4</span>
                             <div>
                                 <h2>État du bien</h2>
                                 <p>Affinez votre estimation</p>
@@ -239,11 +253,11 @@
                     </div>
                 </div>
 
-                <!-- Step 4: Equipment & Options -->
-                <div class="form-step" data-step="4">
+                <!-- Step 5: Equipment & Options -->
+                <div class="form-step" data-step="5">
                     <div class="form-card">
                         <div class="card-header">
-                            <span class="step-number">4</span>
+                            <span class="step-number">5</span>
                             <div>
                                 <h2>Équipements</h2>
                                 <p>Optionnel - Sélectionnez ce qui s'applique</p>
@@ -401,11 +415,11 @@
                     </div>
                 </div>
 
-                <!-- Step 5: Quand vendez-vous ? -->
-                <div class="form-step" data-step="5">
+                <!-- Step 6: Quand vendez-vous ? -->
+                <div class="form-step" data-step="6">
                     <div class="form-card">
                         <div class="card-header">
-                            <span class="step-number">5</span>
+                            <span class="step-number">6</span>
                             <div>
                                 <h2>Votre projet</h2>
                                 <p>Quand souhaitez-vous vendre ?</p>
@@ -440,17 +454,17 @@
                         <button type="button" class="nav-btn nav-btn-prev" onclick="prevStep()">
                             <span>←</span> Précédent
                         </button>
-                        <button type="button" class="nav-btn nav-btn-next" id="step5-next-btn" onclick="handleStep5Next()" disabled>
+                        <button type="button" class="nav-btn nav-btn-next" id="step6-next-btn" onclick="handleStep6Next()" disabled>
                             Suivant <span>→</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Step 6: Formulaire de capture -->
-                <div class="form-step" data-step="6">
+                <!-- Step 7: Formulaire de capture -->
+                <div class="form-step" data-step="7">
                     <div class="form-card">
                         <div class="card-header">
-                            <span class="step-number">6</span>
+                            <span class="step-number">7</span>
                             <div>
                                 <h2>Vos coordonnées</h2>
                                 <p>Recevez votre estimation détaillée</p>
@@ -799,7 +813,7 @@
     <script>
         // Multi-step form navigation
         let currentStep = 1;
-        const totalSteps = 6;
+        const totalSteps = 7;
 
         // Logging helper
         function log(message, data = null) {
@@ -823,11 +837,11 @@
         });
 
         function updateStepper() {
-            // Mapper les 6 étapes internes vers 3 étapes visuelles
-            // Étapes 1-2 → Visual 1, Étapes 3-4 → Visual 2, Étapes 5-6 → Visual 3
+            // Mapper les 7 étapes internes vers 3 étapes visuelles
+            // Étapes 1-2 → Visual 1 (Localisation), Étapes 3-5 → Visual 2 (Caractéristiques), Étapes 6-7 → Visual 3 (Projet)
             let visualStep;
             if (currentStep <= 2) visualStep = 1;
-            else if (currentStep <= 4) visualStep = 2;
+            else if (currentStep <= 5) visualStep = 2;
             else visualStep = 3;
 
             document.querySelectorAll('.stepper-step').forEach((step, index) => {
@@ -852,12 +866,13 @@
         }
 
         const stepNames = {
-            1: 'Type & Localisation',
-            2: 'Caractéristiques',
-            3: 'État du bien',
-            4: 'Équipements',
-            5: 'Projet de vente',
-            6: 'Coordonnées'
+            1: 'Type de bien',
+            2: 'Code postal',
+            3: 'Caractéristiques',
+            4: 'État du bien',
+            5: 'Équipements',
+            6: 'Projet de vente',
+            7: 'Coordonnées'
         };
 
         function showStep(step) {
@@ -881,15 +896,18 @@
 
         function getStepValidationRules(step) {
             const rules = {
-                1: [
+                1: [], // Type de bien - validation séparée
+                2: [
                     { id: 'code_postal', name: 'Code postal', required: true, pattern: /^[0-9]{5}$/, message: 'Le code postal doit contenir 5 chiffres' }
                 ],
-                2: [
+                3: [
                     { id: 'surface', name: 'Surface', required: true, min: 9, max: 1000, message: 'La surface doit être entre 9 et 1000 m²' },
                     { id: 'nb_pieces', name: 'Nombre de pièces', required: true, min: 1, max: 20, message: 'Le nombre de pièces doit être entre 1 et 20' }
                 ],
-                3: [], // Pas de champs obligatoires
-                4: []  // Pas de champs obligatoires
+                4: [], // Pas de champs obligatoires
+                5: [], // Pas de champs obligatoires
+                6: [], // Timeline - validation séparée
+                7: []  // Coordonnées - validation séparée
             };
             return rules[step] || [];
         }
@@ -1003,7 +1021,7 @@
             }
         }
 
-        // Type selector (Step 1)
+        // Type selector (Step 1) - Auto-advance on selection
         document.querySelectorAll('.type-option:not(.timeline-option)').forEach(option => {
             option.addEventListener('click', function() {
                 document.querySelectorAll('.type-option:not(.timeline-option)').forEach(o => o.classList.remove('selected'));
@@ -1022,23 +1040,50 @@
                 document.getElementById('dependances-option').style.display = isMaison ? 'flex' : 'none';
                 document.getElementById('portail-option').style.display = isMaison ? 'flex' : 'none';
                 document.getElementById('ascenseur-option').style.display = isMaison ? 'none' : 'flex';
+
+                // AUTO-ADVANCE: Passer à l'étape 2 (code postal) après sélection
+                if (currentStep === 1) {
+                    log(`Type de bien sélectionné: ${type} - passage auto à l'étape 2`);
+                    setTimeout(() => {
+                        currentStep = 2;
+                        showStep(2);
+                        // Focus sur le champ code postal
+                        document.getElementById('code_postal').focus();
+                    }, 150);
+                }
             });
         });
 
-        // Timeline selector (Step 5)
+        // Code postal auto-advance (Step 2)
+        const codePostalInput = document.getElementById('code_postal');
+
+        codePostalInput.addEventListener('input', function() {
+            const value = this.value.trim();
+
+            // Validate format (5 digits) and auto-advance
+            if (/^[0-9]{5}$/.test(value) && currentStep === 2) {
+                log(`Code postal saisi: ${value} - passage auto à l'étape 3`);
+                setTimeout(() => {
+                    currentStep = 3;
+                    showStep(3);
+                }, 300);
+            }
+        });
+
+        // Timeline selector (Step 6)
         document.querySelectorAll('.timeline-option').forEach(option => {
             option.addEventListener('click', function() {
                 document.querySelectorAll('.timeline-option').forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
 
                 // Activer le bouton Suivant
-                document.getElementById('step5-next-btn').disabled = false;
+                document.getElementById('step6-next-btn').disabled = false;
                 log(`Timeline sélectionnée: ${this.dataset.timeline}`);
             });
         });
 
-        // Gestion du bouton Suivant de l'étape 5
-        function handleStep5Next() {
+        // Gestion du bouton Suivant de l'étape 6
+        function handleStep6Next() {
             const selectedOption = document.querySelector('input[name="quand_vendre"]:checked');
             if (!selectedOption) {
                 alert('Veuillez sélectionner quand vous souhaitez vendre.');
@@ -1050,10 +1095,10 @@
                 log('Mode curieux - soumission directe');
                 submitEstimation();
             } else {
-                // Projet de vente -> passer à l'étape 6 (coordonnées)
-                log('Projet de vente - passage à l\'étape 6');
-                currentStep = 6;
-                showStep(6);
+                // Projet de vente -> passer à l'étape 7 (coordonnées)
+                log('Projet de vente - passage à l\'étape 7');
+                currentStep = 7;
+                showStep(7);
             }
         }
 
@@ -1061,8 +1106,8 @@
         async function submitEstimation() {
             const form = document.getElementById('estimation-form');
 
-            // Validate steps 1-4
-            for (let i = 1; i <= 4; i++) {
+            // Validate steps 1-5
+            for (let i = 1; i <= 5; i++) {
                 if (!validateStep(i)) {
                     log(`Validation échouée à l'étape ${i}`);
                     currentStep = i;
@@ -1077,8 +1122,8 @@
 
             if (!selectedTimeline) {
                 alert('Veuillez sélectionner quand vous souhaitez vendre.');
-                currentStep = 5;
-                showStep(5);
+                currentStep = 6;
+                showStep(6);
                 return;
             }
 
@@ -1329,9 +1374,9 @@
             document.getElementById('appart-fields').classList.remove('hidden');
             document.getElementById('maison-fields').classList.add('hidden');
             document.getElementById('maison-premium').classList.add('hidden');
-            // Reset étape 5 et 6
+            // Reset étape 6 et 7
             document.querySelectorAll('.timeline-option').forEach(o => o.classList.remove('selected'));
-            document.getElementById('step5-next-btn').disabled = true;
+            document.getElementById('step6-next-btn').disabled = true;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
