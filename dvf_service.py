@@ -1,321 +1,237 @@
 """
 Service pour récupérer les données DVF (Demandes de Valeurs Foncières)
-Utilise l'API cquest.org avec cache persistant pour éviter les appels répétés
+Utilise la base de données locale PostgreSQL
 """
 
-import requests
-import json
 import os
-import time
-from datetime import datetime
-from typing import Optional, List, Dict, Any, Tuple
-from pathlib import Path
-import numpy as np
+from typing import Dict, Any
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 
 class DVFService:
-    """Service pour interroger l'API DVF avec cache persistant."""
-
-    BASE_URL = "https://api.cquest.org/dvf"
-    GEO_API_URL = "https://geo.api.gouv.fr"
-    MIN_TRANSACTIONS = 10
-    RATE_LIMIT_DELAY = 0.5  # Délai entre requêtes en secondes
+    """Service pour interroger les stats de prix depuis la DB locale."""
 
     def __init__(self):
-        self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'ImmoEstimator/1.0',
-            'Accept': 'application/json'
-        })
+        self.database_url = os.getenv('DATABASE_URL')
 
-        # Cache persistant sur disque
-        self._cache_dir = Path(__file__).parent / "cache"
-        self._cache_dir.mkdir(exist_ok=True)
-        self._cache_file = self._cache_dir / "dvf_cache.json"
-        self._cache = self._load_cache()
-        self._last_request_time = 0
-
-    def _load_cache(self) -> Dict:
-        """Charge le cache depuis le disque."""
-        if self._cache_file.exists():
-            try:
-                with open(self._cache_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception:
-                pass
-        return {}
-
-    def _save_cache(self):
-        """Sauvegarde le cache sur disque."""
-        try:
-            with open(self._cache_file, 'w', encoding='utf-8') as f:
-                json.dump(self._cache, f)
-        except Exception:
-            pass
-
-    def _rate_limit(self):
-        """Applique le rate limiting."""
-        elapsed = time.time() - self._last_request_time
-        if elapsed < self.RATE_LIMIT_DELAY:
-            time.sleep(self.RATE_LIMIT_DELAY - elapsed)
-        self._last_request_time = time.time()
-
-    def get_transactions_by_postal_code(
-        self,
-        code_postal: str,
-        annee_min: int = None
-    ) -> List[Dict[str, Any]]:
-        """
-        Récupère les transactions pour un code postal donné via l'API cquest.
-        Utilise le cache persistant pour éviter les appels répétés.
-        """
-        cache_key = f"dvf_{code_postal}"
-
-        # Vérifier le cache
-        if cache_key in self._cache:
-            cached = self._cache[cache_key]
-            print(f"[DVF] Cache hit pour {code_postal}: {len(cached)} transactions")
-            return cached
-
-        if annee_min is None:
-            annee_min = 2019  # Données plus récentes pour plus de pertinence
-
-        try:
-            self._rate_limit()
-
-            print(f"[DVF] Requête API pour {code_postal}...")
-            response = self.session.get(
-                self.BASE_URL,
-                params={'code_postal': code_postal},
-                timeout=30
-            )
-            response.raise_for_status()
-            data = response.json()
-
-            # Log la réponse brute
-            total_results = data.get('nb_resultats', 0)
-            print(f"[DVF] API retourne nb_resultats={total_results}")
-
-            transactions = data.get('resultats', [])
-            print(f"[DVF] Transactions brutes reçues: {len(transactions)}")
-
-            transactions = [
-                t for t in transactions
-                if self._extract_year(t.get('date_mutation', '')) >= annee_min
-            ]
-            print(f"[DVF] Transactions après filtre année >= {annee_min}: {len(transactions)}")
-
-            self._cache[cache_key] = transactions
-            self._save_cache()
-
-            return transactions
-
-        except requests.RequestException as e:
-            print(f"[DVF] Erreur requête {code_postal}: {e}")
-            return []
-
-    def _extract_year(self, date_str: str) -> int:
-        """Extrait l'année d'une date."""
-        try:
-            if date_str:
-                return int(date_str.split('-')[0])
-        except (ValueError, IndexError, AttributeError):
-            pass
-        return 0
-
-    def _get_type_local(self, transaction: Dict) -> str:
-        """Extrait le type de local."""
-        return (transaction.get('type_local') or '').strip()
-
-    def _get_surface(self, transaction: Dict) -> float:
-        """Extrait la surface."""
-        # L'API a une typo: "surface_relle_bati" au lieu de "surface_reelle_bati"
-        surface = transaction.get('surface_relle_bati') or transaction.get('surface_reelle_bati')
-        if surface:
-            try:
-                return float(surface)
-            except (ValueError, TypeError):
-                pass
-        return 0
-
-    def _get_prix(self, transaction: Dict) -> float:
-        """Extrait le prix."""
-        prix = transaction.get('valeur_fonciere')
-        if prix:
-            try:
-                return float(prix)
-            except (ValueError, TypeError):
-                pass
-        return 0
-
-    def calculate_price_per_sqm(
-        self,
-        transactions: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
-        """
-        Calcule les statistiques de prix au m².
-        """
-        prices_per_sqm = []
-
-        for t in transactions:
-            surface = self._get_surface(t)
-            prix = self._get_prix(t)
-
-            # Filtrer les transactions valides
-            if surface > 9 and prix > 5000:
-                price_sqm = prix / surface
-                # Filtre des valeurs aberrantes
-                if 100 < price_sqm < 25000:
-                    prices_per_sqm.append(price_sqm)
-
-        if not prices_per_sqm:
-            return {
-                'moyenne': 0,
-                'mediane': 0,
-                'min': 0,
-                'max': 0,
-                'ecart_type': 0,
-                'nb_transactions': 0
-            }
-
-        prices = np.array(prices_per_sqm)
-
-        return {
-            'moyenne': float(np.mean(prices)),
-            'mediane': float(np.median(prices)),
-            'min': float(np.min(prices)),
-            'max': float(np.max(prices)),
-            'ecart_type': float(np.std(prices)),
-            'nb_transactions': len(prices_per_sqm)
-        }
-
-    def get_nearby_postal_codes(self, code_postal: str, radius_km: int = 20) -> List[str]:
-        """Trouve les codes postaux voisins (avec cache)."""
-        cache_key = f"geo_nearby_{code_postal}_{radius_km}"
-
-        if cache_key in self._cache:
-            return self._cache[cache_key]
-
-        try:
-            self._rate_limit()
-
-            # Coordonnées de la commune
-            response = self.session.get(
-                f"{self.GEO_API_URL}/communes",
-                params={'codePostal': code_postal, 'fields': 'centre,codesPostaux'},
-                timeout=10
-            )
-            response.raise_for_status()
-            communes = response.json()
-
-            if not communes:
-                return [code_postal]
-
-            centre = communes[0].get('centre', {}).get('coordinates', [])
-            if not centre or len(centre) < 2:
-                return [code_postal]
-
-            lon, lat = centre[0], centre[1]
-
-            self._rate_limit()
-
-            # Communes dans le rayon
-            response = self.session.get(
-                f"{self.GEO_API_URL}/communes",
-                params={
-                    'lat': lat, 'lon': lon,
-                    'distance': radius_km * 1000,
-                    'fields': 'codesPostaux'
-                },
-                timeout=15
-            )
-            response.raise_for_status()
-            nearby = response.json()
-
-            postal_codes = set([code_postal])
-            for c in nearby:
-                for cp in c.get('codesPostaux', []):
-                    postal_codes.add(cp)
-
-            result = list(postal_codes)
-            self._cache[cache_key] = result
-            self._save_cache()
-            return result
-
-        except Exception:
-            return [code_postal]
-
-    def get_aggregated_transactions(
-        self,
-        code_postal: str,
-        min_transactions: int = None
-    ) -> Tuple[List[Dict[str, Any]], List[str], int]:
-        """
-        Récupère les transactions avec agrégation si nécessaire.
-        """
-        if min_transactions is None:
-            min_transactions = self.MIN_TRANSACTIONS
-
-        transactions = self.get_transactions_by_postal_code(code_postal)
-        valid_transactions = [
-            t for t in transactions
-            if self._get_surface(t) > 0 and self._get_prix(t) > 0
-        ]
-
-        if len(valid_transactions) >= min_transactions:
-            return valid_transactions, [code_postal], 0
-
-        for radius in [15, 30, 50]:
-            nearby_codes = self.get_nearby_postal_codes(code_postal, radius)
-            all_transactions = []
-            used_codes = []
-
-            for cp in nearby_codes:
-                cp_transactions = self.get_transactions_by_postal_code(cp)
-                valid = [t for t in cp_transactions if self._get_surface(t) > 0 and self._get_prix(t) > 0]
-                if valid:
-                    all_transactions.extend(valid)
-                    used_codes.append(cp)
-
-            if len(all_transactions) >= min_transactions:
-                return all_transactions, used_codes, radius
-
-        return (all_transactions if all_transactions else valid_transactions,
-                used_codes if used_codes else [code_postal], 50)
+    def _get_connection(self):
+        """Crée une connexion à la base de données."""
+        return psycopg2.connect(self.database_url)
 
     def get_price_stats_by_type_aggregated(
         self,
         code_postal: str
     ) -> Dict[str, Any]:
-        """Stats de prix par type avec agrégation automatique."""
-        all_transactions, used_codes, radius = self.get_aggregated_transactions(code_postal)
+        """
+        Récupère les stats de prix depuis la table communes.
+        Agrège avec les communes voisines si nécessaire.
+        """
+        print(f"[DVF-DB] Recherche stats pour {code_postal}")
 
-        appartements = [t for t in all_transactions if self._get_type_local(t).lower() == 'appartement']
-        maisons = [t for t in all_transactions if self._get_type_local(t).lower() == 'maison']
+        try:
+            conn = self._get_connection()
+            cur = conn.cursor(cursor_factory=RealDictCursor)
+
+            # Chercher la commune principale
+            cur.execute("""
+                SELECT
+                    code_postal, nom,
+                    prix_m2_appartement, prix_m2_maison,
+                    nb_transactions_12m, prix_min, prix_max
+                FROM communes
+                WHERE code_postal = %s
+                LIMIT 1
+            """, (code_postal,))
+
+            commune = cur.fetchone()
+
+            if commune and (commune['prix_m2_appartement'] or commune['prix_m2_maison']):
+                prix_a = commune['prix_m2_appartement'] or 0
+                prix_m = commune['prix_m2_maison'] or 0
+                print(f"[DVF-DB] Trouvé: {commune['nom']} - Appart: {prix_a:.0f}€/m², Maison: {prix_m:.0f}€/m²")
+
+                result = self._build_stats_from_commune(commune)
+                cur.close()
+                conn.close()
+                return result
+
+            # Si pas de données, chercher dans les communes voisines
+            print(f"[DVF-DB] Pas de données directes, recherche communes voisines...")
+
+            cur.execute("""
+                SELECT
+                    c2.code_postal, c2.nom,
+                    c2.prix_m2_appartement, c2.prix_m2_maison,
+                    c2.nb_transactions_12m, c2.prix_min, c2.prix_max
+                FROM communes c1
+                JOIN commune_voisines cv ON c1.id = cv.commune_id
+                JOIN communes c2 ON c2.id = cv.voisine_id
+                WHERE c1.code_postal = %s
+                AND (c2.prix_m2_appartement IS NOT NULL OR c2.prix_m2_maison IS NOT NULL)
+                ORDER BY c2.nb_transactions_12m DESC
+                LIMIT 10
+            """, (code_postal,))
+
+            voisines = cur.fetchall()
+
+            if voisines:
+                print(f"[DVF-DB] Trouvé {len(voisines)} communes voisines avec données")
+                result = self._aggregate_stats(voisines)
+                result['est_agrege'] = True
+                result['nb_communes'] = len(voisines)
+                cur.close()
+                conn.close()
+                return result
+
+            # Fallback: chercher par département
+            dept = code_postal[:2]
+            print(f"[DVF-DB] Fallback département {dept}")
+
+            cur.execute("""
+                SELECT
+                    code_postal, nom,
+                    prix_m2_appartement, prix_m2_maison,
+                    nb_transactions_12m, prix_min, prix_max
+                FROM communes
+                WHERE departement_code = %s
+                AND prix_m2_appartement IS NOT NULL
+                ORDER BY nb_transactions_12m DESC
+                LIMIT 20
+            """, (dept,))
+
+            dept_communes = cur.fetchall()
+            cur.close()
+            conn.close()
+
+            if dept_communes:
+                print(f"[DVF-DB] Trouvé {len(dept_communes)} communes dans le département")
+                result = self._aggregate_stats(dept_communes)
+                result['est_agrege'] = True
+                result['rayon_km'] = 50
+                result['nb_communes'] = len(dept_communes)
+                return result
+
+            # Aucune donnée
+            print(f"[DVF-DB] Aucune donnée trouvée pour {code_postal}")
+            return self._empty_stats()
+
+        except Exception as e:
+            print(f"[DVF-DB] Erreur: {e}")
+            return self._empty_stats()
+
+    def _build_stats_from_commune(self, commune: Dict) -> Dict[str, Any]:
+        """Construit les stats depuis une commune."""
+        prix_appart = float(commune['prix_m2_appartement'] or 0)
+        prix_maison = float(commune['prix_m2_maison'] or 0)
+        nb_trans = int(commune['nb_transactions_12m'] or 0)
+
+        # Estimation de l'écart-type (environ 15% du prix moyen)
+        ecart_appart = prix_appart * 0.15 if prix_appart else 0
+        ecart_maison = prix_maison * 0.15 if prix_maison else 0
+
+        # Prix de référence (utilise celui disponible)
+        prix_ref = prix_appart or prix_maison
 
         return {
-            'appartement': self.calculate_price_per_sqm(appartements),
-            'maison': self.calculate_price_per_sqm(maisons),
-            'global': self.calculate_price_per_sqm(all_transactions),
-            'codes_postaux_utilises': used_codes,
-            'rayon_km': radius,
-            'est_agrege': len(used_codes) > 1
+            'appartement': {
+                'moyenne': prix_appart or prix_ref,
+                'mediane': prix_appart or prix_ref,
+                'min': (prix_appart or prix_ref) * 0.7,
+                'max': (prix_appart or prix_ref) * 1.3,
+                'ecart_type': ecart_appart or prix_ref * 0.15,
+                'nb_transactions': nb_trans
+            },
+            'maison': {
+                'moyenne': prix_maison or prix_ref,
+                'mediane': prix_maison or prix_ref,
+                'min': (prix_maison or prix_ref) * 0.7,
+                'max': (prix_maison or prix_ref) * 1.3,
+                'ecart_type': ecart_maison or prix_ref * 0.15,
+                'nb_transactions': nb_trans
+            },
+            'global': {
+                'moyenne': prix_ref,
+                'mediane': prix_ref,
+                'min': prix_ref * 0.7,
+                'max': prix_ref * 1.3,
+                'ecart_type': prix_ref * 0.15,
+                'nb_transactions': nb_trans
+            },
+            'codes_postaux_utilises': [commune['code_postal']],
+            'rayon_km': 0,
+            'est_agrege': False
         }
 
-    def get_price_stats_by_type(
-        self,
-        code_postal: str
-    ) -> Dict[str, Dict[str, float]]:
-        """Version simple sans agrégation."""
-        transactions = self.get_transactions_by_postal_code(code_postal)
+    def _aggregate_stats(self, communes: list) -> Dict[str, Any]:
+        """Agrège les stats de plusieurs communes."""
+        total_trans = sum(int(c['nb_transactions_12m'] or 0) for c in communes)
 
-        appartements = [t for t in transactions if self._get_type_local(t).lower() == 'appartement']
-        maisons = [t for t in transactions if self._get_type_local(t).lower() == 'maison']
+        # Moyenne pondérée par nombre de transactions
+        if total_trans > 0:
+            prix_appart = sum(
+                float(c['prix_m2_appartement'] or 0) * int(c['nb_transactions_12m'] or 0)
+                for c in communes
+            ) / total_trans
+
+            prix_maison = sum(
+                float(c['prix_m2_maison'] or 0) * int(c['nb_transactions_12m'] or 0)
+                for c in communes
+            ) / total_trans
+        else:
+            prix_appart = sum(float(c['prix_m2_appartement'] or 0) for c in communes) / len(communes)
+            prix_maison = sum(float(c['prix_m2_maison'] or 0) for c in communes) / len(communes)
+
+        ecart_appart = prix_appart * 0.18  # Plus large car agrégé
+        ecart_maison = prix_maison * 0.18
 
         return {
-            'appartement': self.calculate_price_per_sqm(appartements),
-            'maison': self.calculate_price_per_sqm(maisons),
-            'global': self.calculate_price_per_sqm(transactions)
+            'appartement': {
+                'moyenne': prix_appart,
+                'mediane': prix_appart,
+                'min': prix_appart * 0.65,
+                'max': prix_appart * 1.35,
+                'ecart_type': ecart_appart,
+                'nb_transactions': total_trans
+            },
+            'maison': {
+                'moyenne': prix_maison,
+                'mediane': prix_maison,
+                'min': prix_maison * 0.65,
+                'max': prix_maison * 1.35,
+                'ecart_type': ecart_maison,
+                'nb_transactions': total_trans
+            },
+            'global': {
+                'moyenne': (prix_appart + prix_maison) / 2,
+                'mediane': (prix_appart + prix_maison) / 2,
+                'min': min(prix_appart, prix_maison) * 0.65,
+                'max': max(prix_appart, prix_maison) * 1.35,
+                'ecart_type': (ecart_appart + ecart_maison) / 2,
+                'nb_transactions': total_trans
+            },
+            'codes_postaux_utilises': [c['code_postal'] for c in communes],
+            'rayon_km': 15,
+            'est_agrege': True
+        }
+
+    def _empty_stats(self) -> Dict[str, Any]:
+        """Retourne des stats vides."""
+        empty = {
+            'moyenne': 0,
+            'mediane': 0,
+            'min': 0,
+            'max': 0,
+            'ecart_type': 0,
+            'nb_transactions': 0
+        }
+        return {
+            'appartement': empty.copy(),
+            'maison': empty.copy(),
+            'global': empty.copy(),
+            'codes_postaux_utilises': [],
+            'rayon_km': 0,
+            'est_agrege': False
         }
 
 

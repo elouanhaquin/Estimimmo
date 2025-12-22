@@ -3508,3 +3508,234 @@ footer {
         padding: 1rem;
     }
 }
+
+/* ===== 5-Step Quiz Styles ===== */
+
+/* Progress Bar */
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: 3px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* Centered form card */
+.form-card-centered {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Step titles */
+.step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 1.5rem;
+}
+
+.step-subtitle {
+    font-size: 1rem;
+    color: var(--gray-500);
+    margin-bottom: 1.5rem;
+    margin-top: -1rem;
+}
+
+/* Centered input group */
+.input-group-centered {
+    max-width: 280px;
+    margin: 0 auto 1.5rem;
+}
+
+.input-centered {
+    text-align: center;
+}
+
+/* Surface selector (step 3) */
+.surface-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.surface-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.75rem;
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.surface-option:hover {
+    border-color: var(--primary-light);
+    background: #f0fdfa;
+}
+
+.surface-option.selected {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(15, 118, 110, 0.1));
+}
+
+.surface-option input {
+    display: none;
+}
+
+.surface-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.95rem;
+}
+
+/* Timeline selector (step 4) */
+.timeline-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 0.75rem;
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timeline-option:hover {
+    border-color: var(--primary-light);
+    background: #f0fdfa;
+}
+
+.timeline-option.selected {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(15, 118, 110, 0.1));
+}
+
+.timeline-option input {
+    display: none;
+}
+
+.timeline-icon {
+    font-size: 1.75rem;
+}
+
+.timeline-label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Back button (text style) */
+.nav-btn-back {
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+    transition: color 0.2s;
+}
+
+.nav-btn-back:hover {
+    color: var(--primary);
+}
+
+/* Inline lead form (step 5) */
+.lead-form-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.lead-form-inline .input-group {
+    margin-bottom: 0;
+}
+
+.input-modern {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
+}
+
+.input-modern::placeholder {
+    color: var(--gray-400);
+}
+
+/* Large submit button */
+.submit-btn-large {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.15rem;
+}
+
+/* Centered consent checkbox */
+.form-card-centered .consent-checkbox {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Mobile responsive for 5-step quiz */
+@media (max-width: 480px) {
+    .step-title {
+        font-size: 1.25rem;
+    }
+
+    .surface-selector,
+    .timeline-selector {
+        grid-template-columns: 1fr;
+    }
+
+    .surface-option,
+    .timeline-option {
+        padding: 1rem;
+    }
+
+    .type-selector-large {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .type-option-large {
+        min-height: 100px;
+        padding: 1.25rem 1rem;
+    }
+
+    .type-option-large .type-icon {
+        font-size: 2.5rem;
+    }
+}
