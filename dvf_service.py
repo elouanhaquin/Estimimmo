@@ -73,14 +73,17 @@ class DVFService:
 
         # Vérifier le cache
         if cache_key in self._cache:
-            return self._cache[cache_key]
+            cached = self._cache[cache_key]
+            print(f"[DVF] Cache hit pour {code_postal}: {len(cached)} transactions")
+            return cached
 
         if annee_min is None:
-            annee_min = 2014  # Les données DVF commencent en 2014
+            annee_min = 2019  # Données plus récentes pour plus de pertinence
 
         try:
             self._rate_limit()
 
+            print(f"[DVF] Requête API pour {code_postal}...")
             response = self.session.get(
                 self.BASE_URL,
                 params={'code_postal': code_postal},
@@ -89,18 +92,26 @@ class DVFService:
             response.raise_for_status()
             data = response.json()
 
+            # Log la réponse brute
+            total_results = data.get('nb_resultats', 0)
+            print(f"[DVF] API retourne nb_resultats={total_results}")
+
             transactions = data.get('resultats', [])
+            print(f"[DVF] Transactions brutes reçues: {len(transactions)}")
+
             transactions = [
                 t for t in transactions
                 if self._extract_year(t.get('date_mutation', '')) >= annee_min
             ]
+            print(f"[DVF] Transactions après filtre année >= {annee_min}: {len(transactions)}")
 
             self._cache[cache_key] = transactions
             self._save_cache()
 
             return transactions
 
-        except requests.RequestException:
+        except requests.RequestException as e:
+            print(f"[DVF] Erreur requête {code_postal}: {e}")
             return []
 
     def _extract_year(self, date_str: str) -> int:
