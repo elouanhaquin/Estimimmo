@@ -590,6 +590,31 @@
 
         log('Formulaire 6 étapes initialisé');
 
+        // Check URL parameters for type preselection
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const typeParam = urlParams.get('type');
+
+            if (typeParam === 'maison' || typeParam === 'appartement') {
+                log(`URL param détecté: type=${typeParam}`);
+
+                // Sélectionner le type
+                const option = document.querySelector(`.type-option[data-type="${typeParam}"]`);
+                if (option) {
+                    option.classList.add('selected');
+                    option.querySelector('input').checked = true;
+                    isMaison = (typeParam === 'maison');
+
+                    // Auto-advance vers étape 2
+                    setTimeout(() => {
+                        currentStep = 2;
+                        showStep(2);
+                        document.getElementById('code_postal').focus();
+                    }, 300);
+                }
+            }
+        }
+
         const stepNames = {
             1: 'Type de bien',
             2: 'Code postal',
@@ -1317,6 +1342,9 @@
                 }, 2000);
             }
         });
+
+        // Check URL params on page load
+        checkUrlParams();
     </script>
     <script src="{{ url_for('static', filename='tracker.js') }}" defer></script>
 </body>
